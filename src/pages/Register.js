@@ -1,3 +1,8 @@
+ import { useState, useEffect } from "react";
+ import { useSelector, useDispatch } from "react-redux";
+ import { useError } from "../hooks/useError.js"
+ import { register, reset } from "../features/auth/authSlice";
+
 import {
     TextInput,
     PasswordInput,
@@ -14,6 +19,36 @@ import {
   import { Link } from "react-router-dom";
   
 const Register = () => {
+   
+    const dispatch = useDispatch();
+    const [formData, setFormData] = useState({
+      email: '',
+      password: ''
+    });
+    
+    const [errors, setErrors] = useError("auth")
+    const { email, password } = formData;
+
+
+    // On input changw
+    const onChange = (e) => {
+      setFormData((state) => ({
+        ...state,
+        [e.target.name]: e.target.value
+      }))
+
+    }
+
+    // Handle the registration form submission
+    const handleSubmit = (e) => {
+      e.preventDefault();
+
+      setErrors({})
+      dispatch(register(formData))
+
+    }
+
+
     return (
         <Container size={420} my={40}>
           <Title
@@ -27,17 +62,37 @@ const Register = () => {
             <Anchor size="sm"><Link to="/register">Already Registered?</Link></Anchor>
 
           </Text>
-    
-          <Paper withBorder shadow="md" p={30} mt={30} radius="md">
-            <TextInput label="Email" placeholder="you@mantine.dev" required />
-            <PasswordInput label="Password" placeholder="Your password" required mt="md" />
+      <form onSubmit={handleSubmit}>
+          <Paper withBorder shadow="md" p={30} mt={30} radius="md" >
+
+            <TextInput 
+              label="Email" 
+              placeholder="you@mantine.dev" 
+              value={email}
+              name="email"
+              onChange={onChange}
+              error={errors && errors.email ? errors.email : false}
+              
+            />
+            <PasswordInput 
+              label="Password" 
+              placeholder="Your password" 
+              mt="md" 
+              value={password}
+              name="password"
+              error={errors && errors.password ? errors.password : false}
+              onChange={onChange}
+              
+            />
             <Group position="apart" mt="md">
               <Checkbox label="By registering I'm accepting the T&C" />
             </Group>
-            <Button fullWidth mt="xl">
+            <Button type="submit" fullWidth mt="xl">
               Sign in
             </Button>
+
           </Paper>
+          </form>
         </Container>
       );
 }

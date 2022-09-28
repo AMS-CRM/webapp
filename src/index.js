@@ -6,6 +6,8 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import './index.css';
 import { MantineProvider } from '@mantine/core';
+import { NotificationsProvider } from '@mantine/notifications';
+
 
 
 const container = document.getElementById('root');
@@ -21,7 +23,11 @@ root.render(
          primaryShade: 9
       }}
     >
-      <App />
+      
+      <NotificationsProvider>
+          <App />
+      </NotificationsProvider>
+
       </MantineProvider>
 
     </Provider>

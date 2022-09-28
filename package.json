@@ -2,11 +2,13 @@
   "name": "webapp2",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:8000",
   "dependencies": {
     "@emotion/react": "^11.10.4",
     "@mantine/core": "^5.4.1",
     "@mantine/form": "^5.4.1",
     "@mantine/hooks": "^5.4.1",
+    "@mantine/notifications": "^5.4.1",
     "@reduxjs/toolkit": "^1.8.5",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
