@@ -1,6 +1,7 @@
  import { useState, useEffect } from "react";
  import { useSelector, useDispatch } from "react-redux";
  import { useError } from "../hooks/useError.js"
+ import { Navigate } from "react-router-dom";
  import { register, reset } from "../features/auth/authSlice";
 
 import {
@@ -21,14 +22,11 @@ import {
 const Register = () => {
    
     const dispatch = useDispatch();
-    const [formData, setFormData] = useState({
-      email: '',
-      password: ''
-    });
-    
+    const [formData, setFormData] = useState({email: '', password: ''});
+    const { user } = useSelector(state => state.auth)
+    console.log(user)
     const [errors, setErrors] = useError("auth")
     const { email, password } = formData;
-
 
     // On input changw
     const onChange = (e) => {
@@ -46,6 +44,10 @@ const Register = () => {
       setErrors({})
       dispatch(register(formData))
 
+    }
+
+    if ( user && user.token != null ) {
+      return <Navigate to="/" />;
     }
 
 
@@ -88,7 +90,7 @@ const Register = () => {
               <Checkbox label="By registering I'm accepting the T&C" />
             </Group>
             <Button type="submit" fullWidth mt="xl">
-              Sign in
+              Register
             </Button>
 
           </Paper>
