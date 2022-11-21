@@ -6,6 +6,7 @@ const GET_CONTACTS = "/contacts";
 const getContacts = async () => {
 
     const response = await axiosDefault.get(GET_CONTACTS);
+
     return response.data;
 
 }

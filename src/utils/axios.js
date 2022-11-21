@@ -4,6 +4,7 @@ const axiosDefault = axios.create({
     baseURL: process.env.REACT_APP_API_URL,
 })
 
+
 axiosDefault.interceptors.request.use(function (config) {
   const user = JSON.parse(localStorage.getItem("user"));
 

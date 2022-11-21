@@ -13,7 +13,6 @@ const state = {
 export const getContacts = createAsyncThunk("contacts/getContacts", async (_, thunkAPI) => {
 
     try {
-
            return await contactService.getContacts();
 
     } catch (error) {

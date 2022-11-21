@@ -20,7 +20,8 @@ root.render(
       theme={{
         primaryColor: 'dark',
          defaultRadius: 4,
-         primaryShade: 9
+         primaryShade: 9,
+         fontFamily: "Poppins"
       }}
     >
       

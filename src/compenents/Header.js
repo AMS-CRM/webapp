@@ -1,46 +1,80 @@
 import { useEffect, useState } from 'react';
 import { useDispatch } from "react-redux"
 import { logout, reset} from "../features/auth/authSlice"
-import {
-  createStyles,
-  Container,
-  Avatar,
-  UnstyledButton,
-  Group,
-  Text,
-  Menu,
-  Tabs,
-  Burger,
-  Title
-} from '@mantine/core';
+import { useNavigate, useLocation } from 'react-router-dom';
+
+import { createStyles, Header, Group, ActionIcon, Container, Burger, Button, Menu, Text, Avatar, UnstyledButton } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+
 import {
   IconLogout,
-  IconHeart,
-  IconStar,
-  IconMessage,
-  IconSettings,
-  IconPlayerPause,
-  IconTrash,
-  IconSwitchHorizontal,
-  IconChevronDown,
+  IconChevronDown
 } from '@tabler/icons';
-import { useNavigate, useLocation } from "react-router-dom";
 
 const useStyles = createStyles((theme) => ({
   header: {
-    paddingTop: theme.spacing.sm,
-    backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
-    borderBottom: `1px solid ${
-      theme.colorScheme === 'dark' ? 'transparent' : theme.colors.gray[2]
-    }`,
-    marginBottom: 120,
+    boxShadow: "rgb(0 12 43 / 5%) 0px 4px 8px"
+  },
+  inner: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'left',
+    height: 56,
+    maxWidth: "none",
+
+    [theme.fn.smallerThan('sm')]: {
+      justifyContent: 'flex-start',
+    },
   },
 
-  mainSection: {
-    paddingBottom: theme.spacing.sm,
+  button: {
+    borderRadius: "8px",
+
   },
 
+  links: {
+    cursor: "pointer",
+    [theme.fn.smallerThan('sm')]: {
+      display: 'none',
+    },
+  },
+
+  social: {
+    width: 260,
+    [theme.fn.smallerThan('sm')]: {
+      width: 'auto',
+      marginLeft: 'auto',
+    },
+  },
+
+  burger: {
+    marginRight: theme.spacing.md,
+
+    [theme.fn.largerThan('sm')]: {
+      display: 'none',
+    },
+  },
+
+  link: {
+    display: 'flex',
+    padding: '8px 8px',
+    borderRadius: theme.radius.sm,
+    textDecoration: 'none',
+    color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.colors.gray[7],
+    fontSize: theme.fontSizes.sm,
+    fontWeight: 500,
+
+    '&:hover': {
+      backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
+    },
+  },
+
+  linkActive: {
+    '&, &:hover': {
+      backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
+      color: theme.fn.variant({ variant: 'light', color: theme.primaryColor }).color,
+    },
+  },
   user: {
     color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
     padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
@@ -65,51 +99,30 @@ const useStyles = createStyles((theme) => ({
   userActive: {
     backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.white,
   },
+  linkIcon: {
+    width: "20px",
+    marginRight: "8px"
+  }
 
-  tabs: {
-    [theme.fn.smallerThan('sm')]: {
-      display: 'none',
-    },
-  },
-
-  tabsList: {
-    borderBottom: '0 !important',
-  },
-
-  tab: {
-    fontWeight: 500,
-    height: 38,
-    backgroundColor: 'transparent',
-
-    '&:hover': {
-      backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.gray[1],
-    },
-
-    '&[data-active]': {
-      backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.white,
-      borderColor: theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.colors.gray[2],
-    },
-  },
 }));
 
+const HeaderTabs = ({links, toggleOpened, toggleOpenedStatus}) => {
 
-
- const HeaderTabs = ({ user, tabs = ["Contacts", "Applications"] }) => {
-  const { classes, theme, cx } = useStyles();
-  const [opened, { toggle }] = useDisclosure(false);
-  const [userMenuOpened, setUserMenuOpened] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
 
   const location = useLocation();
   const currentPage = location.pathname.split("/")[1];
-  const tabName = currentPage.charAt(0).toUpperCase() + currentPage.slice(1)
-  const [ activeTab, setActiveTab ] = useState(tabName)
+  const [userMenuOpened, setUserMenuOpened] = useState(false);
 
 
+  const [opened, { toggle }] = useDisclosure(false);
+  const [active, setActive] = useState(links[0].link);
+  const { classes, cx, theme } = useStyles();
+  
   const onTabChange = (tab) => {
-    setActiveTab(tab)
+    setActive(tab);
     navigate(tab)
   }
 
@@ -119,18 +132,36 @@ const useStyles = createStyles((theme) => ({
     navigate("/login")
   }
 
-    
-  const items = tabs.map((tab) => (
-    <Tabs.Tab value={tab} key={tab}>
-      {tab}
-    </Tabs.Tab>
+  const items = links.map((link) => (
+    <a
+      key={link.label}
+      className={cx(classes.link, { [classes.linkActive]: active === link.link })}
+      onClick={(event) => {
+        event.preventDefault();
+        onTabChange(link.link)
+      }}
+    >
+
+      <img src={link.icon} className={classes.linkIcon} /> 
+      <span>{link.label}</span>
+    </a>
   ));
 
+
+
   return (
-    <div className={classes.header}>
-      <Container className={classes.mainSection}>
+      <Header height={56} mb={50} className={classes.header}>
+      <Container className={classes.inner} size="xl">
+        <Burger opened={opened} onClick={toggle} size="sm" className={classes.burger} />
+        <Group className={classes.links} >
+          {items}
+          <Button 
+            className={classes.button}
+            onClick={() => toggleOpened(!toggleOpenedStatus)}
+          >New application</Button>
+        </Group>
+
         <Group position="apart">
-          <Title>OpenCRM</Title>
 
           <Burger opened={opened} onClick={toggle} className={classes.burger} size="sm" />
 
@@ -154,30 +185,20 @@ const useStyles = createStyles((theme) => ({
                 </Group>
               </UnstyledButton>
             </Menu.Target>
-            <Menu.Dropdown>          
-              <Menu.Item icon={<IconLogout size={14} stroke={1.5}  />}>
-                <div onClick={onLogout}>Logout</div>
+            <Menu.Dropdown>
+            
+             
+              <Menu.Item color="red" icon={<IconLogout size={14} stroke={1.5} />} onClick={onLogout}>
+               Logout
               </Menu.Item>
             </Menu.Dropdown>
           </Menu>
         </Group>
+
       </Container>
-      <Container>
-        <Tabs
-          defaultValue="Contacts"
-          variant="outline"
-          value={activeTab}
-          onTabChange={(tab) => onTabChange(tab)}
-          classNames={{
-            root: classes.tabs,
-            tabsList: classes.tabsList,
-            tab: classes.tab,
-          }}
-        >
-          <Tabs.List>{items}</Tabs.List>
-        </Tabs>
-      </Container>
-    </div>
-  );
+    </Header>
+
+);
 }
+
 export default HeaderTabs;
