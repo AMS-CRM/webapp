@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { logout, reset} from "../features/auth/authSlice"
 import { useNavigate, useLocation } from 'react-router-dom';
 
 import { createStyles, Header, Group, ActionIcon, Container, Burger, Button, Menu, Text, Avatar, UnstyledButton } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import { useDisclosure, useSetState } from '@mantine/hooks';
 
 import {
   IconLogout,
   IconChevronDown
 } from '@tabler/icons';
+import authService from '../features/auth/authService';
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -110,17 +111,13 @@ const HeaderTabs = ({links, toggleOpened, toggleOpenedStatus}) => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-
-  const location = useLocation();
-  const currentPage = location.pathname.split("/")[1];
+  const { user } = useSelector(state => state.auth)
   const [userMenuOpened, setUserMenuOpened] = useState(false);
-
-
   const [opened, { toggle }] = useDisclosure(false);
   const [active, setActive] = useState(links[0].link);
   const { classes, cx, theme } = useStyles();
   
+
   const onTabChange = (tab) => {
     setActive(tab);
     navigate(tab)
@@ -177,9 +174,11 @@ const HeaderTabs = ({links, toggleOpened, toggleOpenedStatus}) => {
                 className={cx(classes.user, { [classes.userActive]: userMenuOpened })}
               >
                 <Group spacing={7}>
-                  <Avatar radius="xl" size={20} />
+                  <Avatar radius="xl" size={20} color="red">
+
+                  </Avatar>
                   <Text weight={500} size="sm" sx={{ lineHeight: 1 }} mr={3}>
-                    Shivdeep Singh
+                    {user.name}
                   </Text>
                   <IconChevronDown size={12} stroke={1.5} />
                 </Group>

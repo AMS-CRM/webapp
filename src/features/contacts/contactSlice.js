@@ -10,10 +10,10 @@ const state = {
 }
 
 // Get the contacts data 
-export const getContacts = createAsyncThunk("contacts/getContacts", async (_, thunkAPI) => {
+export const getContacts = createAsyncThunk("contacts/getContacts", async (data, thunkAPI) => {
 
     try {
-           return await contactService.getContacts();
+           return await contactService.getContacts(data);
 
     } catch (error) {
 
@@ -21,10 +21,9 @@ export const getContacts = createAsyncThunk("contacts/getContacts", async (_, th
                 error.response &&
                 error.response.data &&
                 error.response.data.error || error.response.data.message)  
-            error.message || 
-            error.toString();
-            
-            return thunkAPI.rejectWithValue(message)
+                error.message || 
+                error.toString();
+                return thunkAPI.rejectWithValue(message)
     }
 
 })

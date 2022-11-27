@@ -16,7 +16,9 @@ function App() {
         <Routes>
           <Route element={<ProtectedRoute />}>
              <Route path="/" element={<Dashboard />} />
-             <Route path="/contacts" element={<Contacts />} />
+             <Route path="/contacts/" element={<Contacts />} />
+             <Route path="/contacts/:page" element={<Contacts />} />
+
              <Route path="/applications" element={<Applications />} />
 
           </Route>

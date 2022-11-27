@@ -3,10 +3,10 @@ import axiosDefault from "../../utils/axios"
 const GET_CONTACTS = "/contacts";
 
 // Get the list of all contacts
-const getContacts = async () => {
+const getContacts = async (data) => {
 
-    const response = await axiosDefault.get(GET_CONTACTS);
-
+    const URL = !data.keyword ? `${GET_CONTACTS}/${data.page}` : `${GET_CONTACTS}/${data.page}/${data.search}/${data.keyword}`
+    const response = await axiosDefault.get(URL);
     return response.data;
 
 }
