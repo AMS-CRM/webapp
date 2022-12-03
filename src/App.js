@@ -3,6 +3,8 @@ import ProtectedRoute from "./compenents/ProtectedRoute"
 
 // Get the pages
 import Login from "./pages/Login";
+import {AuthenticationImage} from "./pages/Login2";
+
 import Dashboard from "./pages/Dashboard";
 import Register from "./pages/Register";
 import Applications from "./pages/Applications";
@@ -23,6 +25,8 @@ function App() {
 
           </Route>
           <Route path="/login" element={<Login/>} />
+          <Route path="/login2" element={<AuthenticationImage/>} />
+
           <Route path="/register" element={<Register/>} />
         </Routes>
        </Router>

@@ -4,11 +4,10 @@ import { useDispatch, useSelector } from "react-redux"
 import { useNavigate, useParams }  from "react-router-dom";
 import getInitials  from "../utils/getInitials";
 import {hash} from "../utils/hash"
-
+import  TableLoader  from "../compenents/TableLoader"
 import {
     Avatar,
     Badge,
-    Table,
     Group,
     Text,
     ActionIcon,
@@ -19,12 +18,14 @@ import {
     Pagination,
     Card,
     Container,
+    Table,
     Input,
     createStyles,
     Grid,
     Select
   } from '@mantine/core';
-import { IconPencil, IconTrash, IconSearch } from '@tabler/icons';
+import { IconPencil, IconTrash, IconSearch, IconClipboardList } from '@tabler/icons';
+import Empty from "../layout/Empty.js";
 
 
 const useStyles = createStyles((theme) => ({
@@ -53,7 +54,7 @@ const Contacts = () => {
     const { page } = useParams();
     const navigate = useNavigate();
     const { classes, cx } = useStyles();
-    const { contacts: {data} } = useSelector(state => state.contacts)
+    const { contacts: {data}, isLoading, isError } = useSelector(state => state.contacts)
     const [ pages, setPages ] = useState(0)
     const [ activePage, setActivePage] = useState(parseInt(page) || 1)
     const [ searchQuery, setSearchQuery ] = useState({keyword: "", search: "email"})
@@ -103,11 +104,16 @@ const Contacts = () => {
     const rows = data && data.contacts.length > 0 && data.contacts.map((item) => (
         <tr key={item._id}>
           <td>
-            <Group spacing="sm">
+            <Group spacing="sm" >
             <Avatar color={colors[hash(item.name, colors.length-1)]} radius="xl">{getInitials(item.name)}</Avatar>
-              <Text size="sm" weight={500}>
+              <div>
+              <Text size="sm" weight={500} >
                 {item.name}
               </Text>
+              <Text size="xs" weight={400} color="dimmed" >
+                {item.email}
+              </Text>
+              </div>
             </Group>
           </td>
     
@@ -144,7 +150,7 @@ const Contacts = () => {
     
     return (
        <Container size="xl" mb="100px">
-          
+         
           <Grid>
               <Grid.Col span={6}>
                 <Title order={3}>Applications</Title>
@@ -154,6 +160,8 @@ const Contacts = () => {
             </Grid.Col>     
 
             <Grid.Col span={6}   >
+ 
+
               <Grid className={classes.searchGrid}>
                 <Grid.Col span={5}>
                 <Input
@@ -164,7 +172,8 @@ const Contacts = () => {
                   onChange={e => onChange(e)}
 
                 />  
-                </Grid.Col>
+              </Grid.Col>
+          
                 <Grid.Col span={3}>
                 <Select 
                     placeholder="Search by"
@@ -180,32 +189,47 @@ const Contacts = () => {
                  />
                 </Grid.Col>
               </Grid>
+                
             </Grid.Col>     
           </Grid>
-          
+        
          
-          <Card  shadow="sm" p="0" radius="md" mb="30px" >
-           <ScrollArea>
-            <Table sx={{ minWidth: 800 }} verticalSpacing="sm" >
-              <thead className={classes.thead}>
-                <tr>
-                  <th>Employee</th>
-                  <th>Job title</th>
-                  <th>Email</th>
-                  <th>Phone</th>
-                  <th />
-                </tr>
-              </thead>
-              <tbody>{rows}</tbody>
-            </Table>
-          </ScrollArea>
-          </Card>
-
-          <Pagination 
-            total={pages} 
-            page={activePage}
-            onChange={page => setPage(page)}
-          />
+          {
+            (isError) ? 
+              <Empty 
+                  title="Create manage and delete contacts"
+                  description="Creating availability schedules allows you to manage availability across event types. They can be applied to one or more event types.              "
+                  icon={<IconClipboardList size="40"/>}
+              /> 
+            : (!isLoading) ?  <>
+            <Card  shadow="sm" p="0" radius="md" mb="30px" >
+            <ScrollArea>
+           
+              <Table sx={{ minWidth: 800 }} verticalSpacing="sm" >
+               <thead className={classes.thead}>
+                 <tr>
+                   <th>Employee</th>
+                   <th>Job title</th>
+                   <th>Email</th>
+                   <th>Phone</th>
+                   <th />
+                 </tr>
+               </thead>
+               <tbody>{rows}</tbody>
+             </Table> 
+           </ScrollArea>
+           </Card>
+           <Pagination 
+           total={pages} 
+           page={activePage}
+           onChange={page => setPage(page)}
+         /></> :  <TableLoader /> 
+            
+          } 
+        
+      
+         
+         
         </Container>
     )
 }

@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from "react-redux"
 import { logout, reset} from "../features/auth/authSlice"
 import { useNavigate, useLocation } from 'react-router-dom';
+import { hash } from "../utils/hash";
+import getInitials from "../utils/getInitials";
 
 import { createStyles, Header, Group, ActionIcon, Container, Burger, Button, Menu, Text, Avatar, UnstyledButton } from '@mantine/core';
 import { useDisclosure, useSetState } from '@mantine/hooks';
@@ -107,11 +109,14 @@ const useStyles = createStyles((theme) => ({
 
 }));
 
+const colors = ['neutral', 'blue', 'red', 'orange', 'yellow', 'green', 'teal', 'purple']
+
+
 const HeaderTabs = ({links, toggleOpened, toggleOpenedStatus}) => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { user } = useSelector(state => state.auth)
+  const { user, isLoading, isError, message } = useSelector(state => state.auth)
   const [userMenuOpened, setUserMenuOpened] = useState(false);
   const [opened, { toggle }] = useDisclosure(false);
   const [active, setActive] = useState(links[0].link);
@@ -174,8 +179,8 @@ const HeaderTabs = ({links, toggleOpened, toggleOpenedStatus}) => {
                 className={cx(classes.user, { [classes.userActive]: userMenuOpened })}
               >
                 <Group spacing={7}>
-                  <Avatar radius="xl" size={20} color="red">
-
+                  <Avatar radius="xl" color={colors[hash(user.name || "", colors.length-1)]}>
+                      {getInitials(user.name)}
                   </Avatar>
                   <Text weight={500} size="sm" sx={{ lineHeight: 1 }} mr={3}>
                     {user.name}

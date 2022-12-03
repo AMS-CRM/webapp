@@ -6,7 +6,7 @@ const state = {
     isError: false, 
     isSuccess: false,
     message: '',
-    user: localStorage.getItem("user") || null
+    user: JSON.parse(localStorage.getItem("user")) || null
 }
 
 // Register the user 

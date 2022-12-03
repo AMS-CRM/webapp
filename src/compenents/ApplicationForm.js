@@ -1,11 +1,17 @@
-import { Drawer, useMantineTheme, Title, Container, Input, Grid, Button } from '@mantine/core';
-import { IconAt } from '@tabler/icons';
+import { Drawer, useMantineTheme, createStyles, Container } from '@mantine/core';
+import CreateContact from "./CreateContact";
 
+const useStyles = createStyles((theme) => ({
+    drawer: {
+        overflowY: "scroll"
+    }
+}))
 
 const ApplicationForm = ({onClose, opened}) => {
 
 
     const theme = useMantineTheme();
+    const { classes } = useStyles();
 
     return (
         <Drawer
@@ -17,69 +23,10 @@ const ApplicationForm = ({onClose, opened}) => {
             padding="xl"
             position='right'
             onClose={()=>onClose(false)}
+            className={classes.drawer}
         >
         <Container >
-            <Title order={2} mb="6px">Create Profile</Title>
-            <Title order={5} mb="30px" weight="400">Create a user applicant's profile using passport data.</Title>
-
-            <form>
-               <Grid>
-                    <Grid.Col span={6} justify="center">
-                        <Input.Wrapper
-                            id="input-demo"
-                            withAsterisk
-                            size="sm"
-                            label="First Name"
-                    >
-                        <Input id="input-demo" placeholder="First Name" />
-                    </Input.Wrapper>
-                
-                    </Grid.Col>
-                    <Grid.Col span={6}>
-                    <Input.Wrapper
-                        id="input-demo"
-                        withAsterisk
-                        size="sm"
-                        label="Last Name"
-                >
-                     <Input id="input-demo" placeholder="Last Name" />
-                </Input.Wrapper>
-                
-                    </Grid.Col>
-
-                    <Grid.Col span={12}>
-                    <Input.Wrapper
-                        id="input-demo"
-                        withAsterisk
-                        size="sm"
-                        label="Middle Name"
-                >
-                     <Input id="input-demo" placeholder="Middle Name" />
-                </Input.Wrapper>
-                
-                    </Grid.Col>
-
-                    <Grid.Col span={12}>
-                    <Input.Wrapper
-                        id="input-demo"
-                        withAsterisk
-                        size="sm"
-                        icon={<IconAt />}
-
-                        label="Email"
-                >
-                     <Input id="input-demo" placeholder="Email" />
-                </Input.Wrapper>
-                
-                    </Grid.Col>
-
-                    <Grid.Col span={4}>
-                            <Button>Create Profile</Button>
-                    </Grid.Col>
-
-                    
-               </Grid>
-        </form>
+           <CreateContact />
         </Container>
       </Drawer>
     )
