@@ -1,15 +1,26 @@
-import { useState, forwardRef, useMemo } from "react";
+import { useState, forwardRef, useMemo, useEffect } from "react";
 import { Title, Input, Grid, Button, Group, Avatar, Text, Select } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
 import { IconEPassport, IconAt } from "@tabler/icons";
 import countryFlagEmoji from "country-flag-emoji";
+import PhoneInput from "./PhoneInput";
+import { useDispatch, useSelector } from "react-redux";
 
+import {getCountries} from "../features/countries/countriesSlice"
 
 
 const CreateContact = () => {
+
+  const dispatch = useDispatch()
   const [formData, setFormData] = useState({});
 
+  useEffect(() => {
+    dispatch(getCountries())
+  }, [])
+
   const onChange = (e) => {
+
+    
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -124,7 +135,11 @@ const CreateContact = () => {
           </Grid.Col>
 
           <Grid.Col span={12}>
-            <Select
+            <PhoneInput />
+          </Grid.Col>
+
+          <Grid.Col span={12}>
+           <Select
                 label="Country of Birth"
                 placeholder="Country of Birth"
                 itemComponent={CountriesList}
@@ -138,6 +153,7 @@ const CreateContact = () => {
                     item.label.toLowerCase().includes(value.toLowerCase().trim())
                 }   
             />
+    
           </Grid.Col>
 
            <Grid.Col span={12}>
