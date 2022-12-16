@@ -4,7 +4,8 @@ import countriesService from "./countriesService";
 export const getCountries = createAsyncThunk("countries/getCountries", async (_, thunkAPI) => {
 
     try {
-        return await countriesService.getCountries();
+        const countriesList =  await countriesService.getCountries();
+        return countriesList.data
     } catch(error) {
           const message = (
             error.response &&
@@ -53,4 +54,4 @@ const countriesSlice = createSlice({
 });
 
 export const { reset } = countriesSlice.actions
-export default countriesService.reducers
+export default countriesSlice.reducer

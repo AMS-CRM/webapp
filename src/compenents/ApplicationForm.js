@@ -1,6 +1,5 @@
 import { Drawer, useMantineTheme, createStyles, Container } from '@mantine/core';
 import CreateContact from "./CreateContact";
-import {getCountries} from "../features/countries/countriesSlice"
 
 const useStyles = createStyles((theme) => ({
     drawer: {

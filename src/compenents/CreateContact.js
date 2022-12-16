@@ -12,6 +12,7 @@ import {getCountries} from "../features/countries/countriesSlice"
 const CreateContact = () => {
 
   const dispatch = useDispatch()
+  const { data } = useSelector(state => state.countries)
   const [formData, setFormData] = useState({});
 
   useEffect(() => {
@@ -19,26 +20,30 @@ const CreateContact = () => {
   }, [])
 
   const onChange = (e) => {
-
-    
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
   };
 
-  const countryList = useMemo(() => {
-    return countryFlagEmoji.list.map((item) => {
+  const dial_code = useMemo(() => {
+    return data.map((item) => {
+        return { ...item, value: item.name, label: `${item.flag} ${item.dial_code}` }
+    })
+  })
+
+    const countryList = useMemo(() => {
+    return data.map((item) => {
         return { ...item, value: item.name, label: item.name }
     })
   })
 
  
 
-  const CountriesList = forwardRef(({ emoji, name, code, ...others}, ref) => (
+  const CountriesList = forwardRef(({ flag, name, code, ...others}, ref) => (
     <div  ref={ref} {...others}>
       <Group noWrap>
-        <Text size="lg">{emoji}</Text>
+        <Text size="lg">{flag}</Text>
        <div>
           <Text size="sm">{name}</Text>
           <Text size="xs" opacity={0.65} >
@@ -135,7 +140,9 @@ const CreateContact = () => {
           </Grid.Col>
 
           <Grid.Col span={12}>
-            <PhoneInput />
+            <PhoneInput 
+              countries={dial_code}
+            />
           </Grid.Col>
 
           <Grid.Col span={12}>
