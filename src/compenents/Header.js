@@ -7,6 +7,7 @@ import getInitials from "../utils/getInitials";
 
 import { createStyles, Header, Group, ActionIcon, Container, Burger, Button, Menu, Text, Avatar, UnstyledButton } from '@mantine/core';
 import { useDisclosure, useSetState } from '@mantine/hooks';
+import WelcomeHeader from "./WelcomeHeader"
 
 import {
   IconLogout,
@@ -121,7 +122,7 @@ const HeaderTabs = ({links, toggleOpened, toggleOpenedStatus}) => {
   const [opened, { toggle }] = useDisclosure(false);
   const [active, setActive] = useState(links[0].link);
   const { classes, cx, theme } = useStyles();
-  
+  const pathname = useLocation().pathname;
 
   const onTabChange = (tab) => {
     setActive(tab);
@@ -149,10 +150,8 @@ const HeaderTabs = ({links, toggleOpened, toggleOpenedStatus}) => {
     </a>
   ));
 
-
-
   return (
-      <Header height={56} mb={50} className={classes.header}>
+      <Header height={56} mb={50} className={`${classes.header} ${pathname == "/" && "dashboard-header"}`}>
       <Container className={classes.inner} size="xl">
         <Burger opened={opened} onClick={toggle} size="sm" className={classes.burger} />
         <Group className={classes.links} >
@@ -198,8 +197,8 @@ const HeaderTabs = ({links, toggleOpened, toggleOpenedStatus}) => {
             </Menu.Dropdown>
           </Menu>
         </Group>
-
       </Container>
+      { pathname == "/" && <WelcomeHeader />}
     </Header>
 
 );

@@ -26,7 +26,7 @@ const ApplicationForm = ({onClose, opened}) => {
             className={classes.drawer}
         >
         <Container >
-           <CreateContact />
+           <CreateContact onClose={onClose} />
         </Container>
       </Drawer>
     )

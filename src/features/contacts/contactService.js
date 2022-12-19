@@ -15,13 +15,21 @@ const getContacts = async (data) => {
 // Create new contact
 const createContact = async ( data ) => {
 
-    const response = await axiosDefault.post(CONTACTS)
+    const response = await axiosDefault.post(CONTACTS, data)
+    return response.data;
+}
+
+// Create new contact
+const deleteContact = async ( data ) => {
+
+    const response = await axiosDefault.delete(CONTACTS, {data: {...data}})
     return response.data;
 }
 
 const contactService = {
     getContacts,
-    createContact
+    createContact,
+    deleteContact
 }
 
 export default contactService;

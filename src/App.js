@@ -21,7 +21,7 @@ function App() {
              <Route path="/contacts/" element={<Contacts />} />
              <Route path="/contacts/:page" element={<Contacts />} />
 
-             <Route path="/applications" element={<Applications />} />
+             <Route path="/Dashboard" element={<Dashboard />} />
 
           </Route>
           <Route path="/login" element={<Login/>} />

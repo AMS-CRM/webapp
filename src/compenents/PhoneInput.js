@@ -2,7 +2,7 @@ import { forwardRef, useEffect, useMemo } from "react";
 import { Input, Text, Select, Group, Grid } from "@mantine/core";
 import { IconChevronDown } from "@tabler/icons";
 
-const PhoneInput = ({countries=[]}) => {
+const PhoneInput = ({countries=[], onChange, onDialCodeChange, phoneNumber, dial_code_error, phone_error}) => {
    
 
   const SelectItems = forwardRef(({ flag, name, dial_code, ...others }, ref) => (
@@ -31,6 +31,8 @@ const PhoneInput = ({countries=[]}) => {
             nothingFound="No Countries found"
             rightSection={<IconChevronDown size={12} />}
             rightSectionWidth={20}
+            error={dial_code_error && "Missing"}
+            onChange={onDialCodeChange}
             searchable
               filter={(value, item) =>
                     item.dial_code.toLowerCase().includes(value.toLowerCase().trim()) ||
@@ -39,7 +41,14 @@ const PhoneInput = ({countries=[]}) => {
           />
         </Grid.Col>
         <Grid.Col span={9}>
-          <Input placeholder="Phone Number" />
+          <Input.Wrapper  error={phone_error}>
+          <Input 
+            placeholder="Phone Number" 
+            value={phoneNumber}
+            name="phone"
+            onChange={onChange}
+          />
+          </Input.Wrapper>
         </Grid.Col>
       </Grid>
     </Input.Wrapper>

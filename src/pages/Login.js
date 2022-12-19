@@ -22,7 +22,7 @@ const Login = () => {
   
    const dispatch = useDispatch();
    const [formData, setFormData] = useState({email: '', password: ''});
-   const { user } = useSelector(state => state.auth)
+   const { user, isLoading } = useSelector(state => state.auth)
    const [errors, setErrors] = useError("auth")
    const { email, password } = formData;
 
@@ -85,7 +85,7 @@ const Login = () => {
              
            />
           
-           <Button type="submit" fullWidth mt="xl">
+           <Button type="submit" fullWidth mt="xl" loading={isLoading}>
              Sign in
            </Button>
 
