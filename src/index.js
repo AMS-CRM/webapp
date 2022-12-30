@@ -1,36 +1,31 @@
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import { Provider } from 'react-redux';
-import { store } from './app/store';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import './index.css';
-import { MantineProvider } from '@mantine/core';
-import { NotificationsProvider } from '@mantine/notifications';
+import React from "react";
+import { createRoot } from "react-dom/client";
+import { Provider } from "react-redux";
+import { store } from "./app/store";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import "./index.css";
+import { MantineProvider } from "@mantine/core";
+import { NotificationsProvider } from "@mantine/notifications";
 
-
-
-const container = document.getElementById('root');
+const container = document.getElementById("root");
 const root = createRoot(container);
 
 root.render(
   <>
     <Provider store={store}>
-    <MantineProvider
-      theme={{
-        primaryColor: 'dark',
-         defaultRadius: 4,
-         primaryShade: 9,
-         fontFamily: "Poppins"
-      }}
-    >
-      
-      <NotificationsProvider>
+      <MantineProvider
+        theme={{
+          primaryColor: "dark",
+          defaultRadius: 4,
+          primaryShade: 6,
+          fontFamily: "Poppins",
+        }}
+      >
+        <NotificationsProvider>
           <App />
-      </NotificationsProvider>
-
+        </NotificationsProvider>
       </MantineProvider>
-
     </Provider>
   </>
 );
