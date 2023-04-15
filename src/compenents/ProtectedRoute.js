@@ -9,18 +9,34 @@ import usersIcon from "../assets/icons/users.png";
 import documentsIcon from "../assets/icons/documents.png";
 import ApplicationForm from "./ApplicationForm";
 
-import { IconBroadcast, IconUser } from "@tabler/icons";
+import {
+  IconBroadcast,
+  IconUser,
+  IconCash,
+  IconLayoutList,
+  IconLayoutDashboard,
+} from "@tabler/icons";
 
 const links = [
   {
+    link: "/",
+    label: "Dashboard",
+    icon: IconLayoutDashboard,
+  },
+  {
     link: "/Contacts",
-    label: "Contacts",
+    label: "Employees",
     icon: IconUser,
   },
   {
-    link: "/Broadcast",
-    label: "Broadcast",
-    icon: IconBroadcast,
+    link: "/Payrolls",
+    label: "Payrolls",
+    icon: IconCash,
+  },
+  {
+    link: "/transactions",
+    label: "Trasactions",
+    icon: IconLayoutList,
   },
 ];
 

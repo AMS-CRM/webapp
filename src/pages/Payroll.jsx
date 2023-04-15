@@ -28,9 +28,9 @@ import {
   Table,
   Button,
   Modal,
-  Input,
   createStyles,
   Grid,
+  Input,
   Select,
   Checkbox,
   Menu,
@@ -63,7 +63,7 @@ const useStyles = createStyles((theme) => ({
 
 const colors = ["blue", "red", "orange", "yellow", "green", "teal", "purple"];
 
-const Contacts = () => {
+const Payroll = () => {
   const dispatch = useDispatch();
   const { page } = useParams();
   const navigate = useNavigate();
@@ -83,8 +83,7 @@ const Contacts = () => {
   const { keyword, search } = searchQuery;
   const [opened, setOpened] = useState(false);
   const [seletedItem, setSelectedItem] = useState(false);
-  const [checked, setChecked] = useState([]);
-  const [selectAll, setSelectAll] = useState(false);
+  const [checked, setChecked] = useState(false);
   const [sendSmSOpened, setSendSmS] = useState(false);
 
   useMemo(() => {
@@ -118,36 +117,6 @@ const Contacts = () => {
     }));
 
     dispatch(getContacts({ page: 0, search, keyword: e.target.value }));
-  };
-
-  const itemCheckedStatus = (itemId) => {
-    // If everything is seleted and items exists in checked list it's an uncheck
-    if (selectAll) {
-      if (checked.includes(itemId)) {
-        return false;
-      }
-      // Item exists in checked list it's unchecked
-      return true;
-    }
-
-    // Item is simply selected without select all it'a a checked
-    if (!selectAll && checked.includes(itemId)) {
-      return true;
-    }
-
-    // Default case if false
-    return false;
-  };
-
-  const handleCheckedItems = (itemId) => {
-    console.log(checked.includes(itemId));
-    // Remove the item if already selected
-    if (checked.includes(itemId)) {
-      setChecked(checked.filter((item) => item !== itemId));
-      console.log(checked);
-    } else {
-      setChecked([...checked, itemId]);
-    }
   };
 
   const deleteContactModal = (id) => {
@@ -184,10 +153,10 @@ const Contacts = () => {
               size="xs"
               onClick={(e) => {
                 e.stopPropagation();
-                handleCheckedItems(item._id);
+                setChecked(e.currentTarget.checked);
               }}
               mt="6px"
-              checked={itemCheckedStatus(item._id)}
+              checked={checked}
             />
             <Avatar
               color={colors[hash(item.firstName)]}
@@ -222,30 +191,40 @@ const Contacts = () => {
           </Text>
         </td>
         <td>
-          <Text size="sm" color="dimmed">
-            {item.nationality}
-          </Text>
+          <Input.Wrapper style={{ width: "100px" }}>
+            <Input
+              placeholder="Last Name"
+              name="lastName"
+              size="md"
+              radius="md"
+              onChange={onChange}
+              value="160"
+            />
+          </Input.Wrapper>
         </td>
         <td>
-          <Text size="sm" color="dimmed">
-            {moment(item.dob).format("MMM Do YY")}
-          </Text>
+          <Input.Wrapper style={{ width: "100px" }}>
+            <Input
+              placeholder="Last Name"
+              name="lastName"
+              size="md"
+              radius="md"
+              onChange={onChange}
+              value="17.5"
+            />
+          </Input.Wrapper>
         </td>
         <td>
-          <Group spacing={0} position="right">
-            <ActionIcon>
-              <IconPencil size={16} stroke={1.5} />
-            </ActionIcon>
-            <ActionIcon
-              color="red"
-              onClick={(e) => {
-                e.stopPropagation();
-                deleteContactModal(item._id);
-              }}
-            >
-              <IconTrash size={16} stroke={1.5} />
-            </ActionIcon>
-          </Group>
+          <Input.Wrapper style={{ width: "100px" }}>
+            <Input
+              placeholder="Last Name"
+              name="lastName"
+              size="md"
+              radius="md"
+              onChange={onChange}
+              value="$1,793"
+            />
+          </Input.Wrapper>
         </td>
       </tr>
     ));
@@ -296,9 +275,9 @@ const Contacts = () => {
       </Modal>
       <Grid>
         <Grid.Col span={6}>
-          <Title order={3}>Employess</Title>
+          <Title order={3}>Payroll</Title>
           <Text color="dimmed" size="sm" mb="30px">
-            Create and manage the employees.
+            Create and manage the payrolls.
           </Text>
         </Grid.Col>
         <Grid.Col span={6}>
@@ -320,9 +299,9 @@ const Contacts = () => {
                 value={searchQuery.search}
                 data={[
                   { value: "email", label: "Email Address" },
-                  { value: "name", label: "Student Name" },
-                  { value: "studentId", label: "Student ID" },
-                  { value: "passport", label: "Passport Number" },
+                  { value: "name", label: "Employee Name" },
+                  { value: "studentId", label: "Employee ID" },
+                  { value: "passport", label: "SIN Number" },
                 ]}
                 onChange={(val) => searchBy(val)}
               />
@@ -337,30 +316,11 @@ const Contacts = () => {
             <Checkbox
               label={<Text>Select All</Text>}
               size="xs"
-              checked={selectAll}
-              onClick={(event) => {
-                setSelectAll(event.currentTarget.checked);
-              }}
+              checked={checked}
+              onClick={(event) => setChecked(event.currentTarget.checked)}
             />
           </Button>
-          <Button
-            variant="outline"
-            radius="xl"
-            mr="10px"
-            style={{ top: "2px" }}
-          >
-            <IconSend size="18" />
-            <Text ml="7px">Send Email</Text>
-          </Button>
-          <Button
-            variant="outline"
-            radius="xl"
-            mr="10px"
-            style={{ top: "2px" }}
-          >
-            <IconDeviceFloppy size="18" />
-            <Text ml="7px">Download data</Text>
-          </Button>
+
           <Menu withArrow style={{ top: "-2px" }}>
             <Menu.Target>
               <Button variant="outline" radius="xl">
@@ -404,11 +364,12 @@ const Contacts = () => {
                 <thead className={classes.thead}>
                   <tr>
                     <th>Student Name</th>
-                    <th>Passport Number</th>
+                    <th>SIN Number</th>
                     <th>Email</th>
                     <th>Phone</th>
-                    <th>Country</th>
-                    <th>Date of birth</th>
+                    <th>Hours</th>
+                    <th>Wage</th>
+                    <th>Total</th>
                     <th />
                   </tr>
                 </thead>
@@ -429,4 +390,4 @@ const Contacts = () => {
   );
 };
 
-export default Contacts;
+export default Payroll;

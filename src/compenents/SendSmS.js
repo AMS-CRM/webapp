@@ -6,10 +6,20 @@ import {
   Grid,
   form,
   Textarea,
+  createStyles,
 } from "@mantine/core";
 import { IconMessage2 } from "@tabler/icons";
 
+const useStyles = createStyles({
+  inputBottom: {
+    border: "0px !important",
+    borderBottom: "1px solid #ccc",
+  },
+});
+
 const SendSmS = ({ opened, setOpened }) => {
+  const { classes } = useStyles();
+
   return (
     <>
       <Drawer
@@ -28,21 +38,13 @@ const SendSmS = ({ opened, setOpened }) => {
         <form>
           <Grid>
             <Grid.Col span={12}>
-              <Input.Wrapper
-                label="Subject"
-                description="Write the message subject"
-                size="sm"
-                required
-              >
+              <Input.Wrapper label="Subject" size="sm" required>
                 <Input
+                  className={classes.inputBottom}
                   placeholder="Message Subject"
                   size="md"
                   radius="md"
                   name="Subject"
-                  style={{
-                    border: "0px !important",
-                    borderBottom: "1px solid #ced4da",
-                  }}
                 />
               </Input.Wrapper>
             </Grid.Col>

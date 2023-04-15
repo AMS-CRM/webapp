@@ -9,7 +9,7 @@ import {
   Tooltip,
   ActionIcon,
 } from "@mantine/core";
-import { IconAddressBook, IconLogout, IconPlus } from "@tabler/icons";
+import { IconCirclePlus, IconLogout, IconPlus } from "@tabler/icons";
 import { useDispatch } from "react-redux";
 import { logout, reset } from "../features/auth/authSlice";
 import { useNavigate } from "react-router-dom";
@@ -56,8 +56,8 @@ const useStyles = createStyles((theme, _params, getRef) => {
       fontSize: theme.fontSizes.sm,
       color:
         theme.colorScheme === "dark"
-          ? theme.colors.dark[1]
-          : theme.colors.gray[7],
+          ? theme.colors.dark[9]
+          : theme.colors.gray[9],
       padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
       borderRadius: theme.radius.sm,
       fontWeight: 500,
@@ -104,8 +104,8 @@ const useStyles = createStyles((theme, _params, getRef) => {
       size: "12px",
       color:
         theme.colorScheme === "dark"
-          ? theme.colors.dark[2]
-          : theme.colors.gray[6],
+          ? theme.colors.dark[9]
+          : theme.colors.gray[9],
       marginRight: theme.spacing.sm,
     },
 
@@ -182,12 +182,12 @@ const SideBar = ({ data, toggleOpened, toggleOpenedStatus }) => {
               width: "100%",
             })}
           >
-            Meero.com
+            Oxcean
           </Title>
         </Group>
         {links}
 
-        <Group className={classes.collectionsHeader} position="apart" mt="20px">
+        {/*  <Group className={classes.collectionsHeader} position="apart" mt="20px">
           <Text size="xs" weight={500} color="dimmed">
             Collections
           </Text>
@@ -197,7 +197,7 @@ const SideBar = ({ data, toggleOpened, toggleOpenedStatus }) => {
             </ActionIcon>
           </Tooltip>
         </Group>
-        <div className={classes.collections}>{collectionLinks}</div>
+        <div className={classes.collections}>{collectionLinks}</div>  */}
       </Navbar.Section>
 
       <Navbar.Section>
@@ -205,7 +205,8 @@ const SideBar = ({ data, toggleOpened, toggleOpenedStatus }) => {
           className={classes.link}
           onClick={() => toggleOpened(!toggleOpenedStatus)}
         >
-          <span>Add new Contact +</span>
+          <IconCirclePlus size={30} />
+          <span style={{ marginLeft: "5px" }}>Create employee</span>
         </a>
       </Navbar.Section>
 

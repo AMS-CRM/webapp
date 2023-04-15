@@ -8,6 +8,7 @@ import { AuthenticationImage } from "./pages/Login2";
 import Dashboard from "./pages/Dashboard";
 import Register from "./pages/Register";
 import Applications from "./pages/Applications";
+import Payroll from "./pages/Payroll";
 
 import Contacts from "./pages/Contacts";
 import Contact from "./pages/Contact";
@@ -24,7 +25,8 @@ function App() {
             <Route path="/contacts/" element={<Contacts />} />
             <Route path="/contacts/:page" element={<Contacts />} />
             <Route path="/Dashboard" element={<Dashboard />} />
-            <Route path="/Contact" element={<Contact />} />
+            <Route path="/Payrolls" element={<Payroll />} />
+            <Route path="/Contact/:id" element={<Contact />} />
             <Route path="/whatsapp" element={<WhatsApp />} />
           </Route>
           <Route path="/login" element={<Login />} />

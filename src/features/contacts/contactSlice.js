@@ -19,13 +19,13 @@ export const createContact = createAsyncThunk("contacts/createContact", async(da
         return await contactService.createContact(data);
 
     } catch (error) {
-
         const message = (
             error.response &&
             error.response.data &&
             error.response.data.error || error.response.data.message)  
             error.message || 
             error.toString();
+
             return thunkAPI.rejectWithValue(message)
 
     }
