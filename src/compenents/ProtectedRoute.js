@@ -15,6 +15,7 @@ import {
   IconCash,
   IconLayoutList,
   IconLayoutDashboard,
+  IconRefresh,
 } from "@tabler/icons";
 
 const links = [
@@ -32,6 +33,11 @@ const links = [
     link: "/Payrolls",
     label: "Payrolls",
     icon: IconCash,
+  },
+  {
+    link: "/Payrolls/run",
+    label: "Run payrolls",
+    icon: IconRefresh,
   },
   {
     link: "/transactions",

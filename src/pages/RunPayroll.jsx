@@ -1,7 +1,7 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import {
   getContacts,
-  deleteContact,
+  editContact,
   reset,
 } from "../features/contacts/contactSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,6 +12,8 @@ import TableLoader from "../compenents/TableLoader";
 import { useError } from "../hooks/useError";
 import SendSmS from "../compenents/SendSmS";
 import moment from "moment";
+import { payrollCreate } from "../features/payrolls/payrollSlice";
+
 import {
   Avatar,
   Badge,
@@ -24,30 +26,23 @@ import {
   Title,
   Pagination,
   Card,
+  PasswordInput,
   Container,
   Table,
   Button,
   Modal,
-  Input,
   createStyles,
   Grid,
+  Input,
   Select,
   Checkbox,
   Menu,
 } from "@mantine/core";
 import {
-  IconPencil,
-  IconTrash,
   IconSearch,
   IconClipboardList,
-  IconAlertCircle,
-  IconChevronDown,
-  IconMail,
-  IconSend,
-  IconSendOff,
   IconDeviceFloppy,
-  IconMessage,
-  IconBrandWhatsapp,
+  IconCircleX,
 } from "@tabler/icons";
 import Empty from "../layout/Empty.js";
 
@@ -66,7 +61,7 @@ const useStyles = createStyles((theme) => ({
 
 const colors = ["blue", "red", "orange", "yellow", "green", "teal", "purple"];
 
-const Contacts = () => {
+const RunPayroll = () => {
   const dispatch = useDispatch();
   const { page } = useParams();
   const navigate = useNavigate();
@@ -77,6 +72,7 @@ const Contacts = () => {
     isError,
     isSuccess,
   } = useSelector((state) => state.contacts);
+  const { isLoading: payrollLoading } = useSelector((state) => state.payroll);
   const [pages, setPages] = useState(0);
   const [activePage, setActivePage] = useState(parseInt(page) || 1);
   const [searchQuery, setSearchQuery] = useState({
@@ -89,7 +85,9 @@ const Contacts = () => {
   const [checked, setChecked] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
   const [sendSmSOpened, setSendSmS] = useState(false);
-
+  const [payrollModal, setPayrollModal] = useState(false);
+  const [formData, setFormData] = useRef({});
+  console.log(formData);
   useMemo(() => {
     dispatch(getContacts({ page }));
   }, []);
@@ -110,7 +108,7 @@ const Contacts = () => {
 
   const setPage = (page) => {
     dispatch(getContacts({ page }));
-    navigate(`/contacts/${page}`);
+    navigate(`/Payrolls/run/${page}`);
     setActivePage(page);
   };
 
@@ -123,6 +121,26 @@ const Contacts = () => {
     dispatch(getContacts({ page: 0, search, keyword: e.target.value }));
   };
 
+  const searchBy = (search) => {
+    setSearchQuery((state) => ({
+      ...state,
+      search,
+    }));
+
+    dispatch(getContacts({ page: 0, search, keyword }));
+  };
+
+  // Hanlde how the app reacts when on checkbox event
+  const handleCheckedItems = (itemId) => {
+    // Remove the item if already selected
+    if (checked.includes(itemId)) {
+      setChecked(checked.filter((item) => item !== itemId));
+    } else {
+      setChecked([...checked, itemId]);
+    }
+  };
+
+  // Decide if the item is selected
   const itemCheckedStatus = (itemId) => {
     // If everything is seleted and items exists in checked list it's an uncheck
     if (selectAll) {
@@ -142,35 +160,31 @@ const Contacts = () => {
     return false;
   };
 
-  const handleCheckedItems = (itemId) => {
-    // Remove the item if already selected
-    if (checked.includes(itemId)) {
-      setChecked(checked.filter((item) => item !== itemId));
-    } else {
-      setChecked([...checked, itemId]);
-    }
-  };
+  const onInputChange = (e, user) => {
+    const data = {
+      ...formData[user],
+      [e.target.name]: e.target.value,
+    };
 
-  const deleteContactModal = (id) => {
-    setSelectedItem(id);
-    setOpened(true);
-  };
-
-  const onDelete = () => {
-    dispatch(deleteContact({ _id: seletedItem }));
-  };
-
-  const searchBy = (search) => {
-    setSearchQuery((state) => ({
-      ...state,
-      search,
-    }));
-
-    dispatch(getContacts({ page: 0, search, keyword }));
+    // Update the back-end based on the local state
+    const payload = {
+      user,
+      payroll: data,
+    };
+    setFormData({
+      ...formData,
+      [user]: data,
+    });
+    // Send backend request
+    dispatch(editContact(payload));
   };
 
   const openContact = (id) => {
     navigate(`/contact/${id}`);
+  };
+
+  const handleRunPayroll = () => {
+    dispatch(payrollCreate({ selectAll, user: checked }));
   };
 
   const theme = useMantineTheme();
@@ -196,10 +210,10 @@ const Contacts = () => {
               variant="filled"
               size="md"
             >
-              <Text>{getInitials(`${item.firstName} ${item.lastName}`)}</Text>
+              {getInitials(`${item.firstName} ${item.lastName}`)}
             </Avatar>
             <div>
-              <Text size="sm" weight={600} color="blue.9">
+              <Text size="sm" weight={400}>
                 {`${item.firstName} ${item.lastName}`}
               </Text>
               {/*
@@ -217,89 +231,78 @@ const Contacts = () => {
             {item.email}
           </Anchor>
         </td>
+
         <td>
-          <Text size="sm" color="dimmed">
-            {`${item.phone.number}`}
-          </Text>
+          <Input.Wrapper
+            style={{ width: "120px" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Input
+              placeholder="Security Question "
+              name="securityQuestion"
+              size="sm"
+              radius="md"
+              onChange={(e) => onInputChange(e, item._id)}
+              value={
+                formData?.[item._id]?.securityQuestion ??
+                item?.payroll?.securityQuestion
+              }
+            />
+          </Input.Wrapper>
         </td>
         <td>
-          <Text size="sm" color="dimmed">
-            {item.nationality}
-          </Text>
+          <Input.Wrapper
+            style={{ width: "100px" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <PasswordInput
+              placeholder="Last Name"
+              name="securityAnswer"
+              size="sm"
+              radius="sm"
+              onChange={(e) => onInputChange(e, item._id)}
+              value={
+                formData?.[item._id]?.securityAnswer ??
+                item?.payroll?.securityAnswer
+              }
+            />
+          </Input.Wrapper>
         </td>
         <td>
-          <Text size="sm" color="dimmed">
-            {moment(item.dob).format("MMM Do YY")}
-          </Text>
-        </td>
-        <td>
-          <Group spacing={0} position="right">
-            <ActionIcon>
-              <IconPencil size={16} stroke={1.5} />
-            </ActionIcon>
-            <ActionIcon
-              color="red"
-              onClick={(e) => {
-                e.stopPropagation();
-                deleteContactModal(item._id);
-              }}
-            >
-              <IconTrash size={16} stroke={1.5} />
-            </ActionIcon>
-          </Group>
+          <Input.Wrapper
+            style={{ width: "100px" }}
+            onClick={(e) => e.stopPropagation(e, item._id)}
+          >
+            <Input
+              placeholder="amount"
+              name="amount"
+              size="sm"
+              radius="sm"
+              onChange={(e) => onInputChange(e, item._id)}
+              value={
+                formData?.[item._id]?.amount ?? item?.payroll?.amount ?? "0"
+              }
+            />
+          </Input.Wrapper>
         </td>
       </tr>
     ));
 
   return (
-    <Container size="xs" mb="100px" className="page-content">
+    <Container size="xl" mb="100px" className="page-content">
+      <Modal opened={payrollModal} onClose={() => setPayrollModal(false)}>
+        <Text>Are you sure you want to run payroll?</Text>
+        <Button onClick={() => handleRunPayroll()} loading={payrollLoading}>
+          Run payroll
+        </Button>
+      </Modal>
       <SendSmS opened={sendSmSOpened} setOpened={setSendSmS} />
 
-      <Modal
-        opened={opened}
-        size="lg"
-        p="10px"
-        withCloseButton={false}
-        onClose={() => setOpened(false)}
-        centered
-        overlayColor={
-          theme.colorScheme === "dark"
-            ? theme.colors.dark[9]
-            : theme.colors.gray[2]
-        }
-        overlayOpacity={0.55}
-        overlayBlur={3}
-      >
-        <Avatar
-          color="red"
-          radius="100%"
-          style={{ float: "left", marginRight: "10px" }}
-        >
-          <IconAlertCircle />
-        </Avatar>
-        <Group mb="10px">
-          <Title order={2}>Delete contact</Title>
-          <Text size="sm" color="dimmed">
-            Are you sure you want to delete this event type? Anyone who you've
-            shared this link with will no longer be able to book using it.
-          </Text>
-        </Group>
-        <Group position="right">
-          <Anchor>
-            <Text size="sm" onClick={() => setOpened(false)}>
-              Cancel
-            </Text>
-          </Anchor>
-          <Button onClick={() => onDelete()} loading={isLoading}>
-            Delete
-          </Button>
-        </Group>
-      </Modal>
-      <Grid>
+      <Grid mb="10px" justify="space-between">
         <Grid.Col span={6}>
-          <Title order={3}>Employess</Title>
+          <Title order={3}>Payroll</Title>
           <Text color="dimmed" size="sm" mb="30px">
-            Create and manage the employees.
+            Create and manage the payrolls.
           </Text>
         </Grid.Col>
         <Grid.Col span={6}>
@@ -322,8 +325,8 @@ const Contacts = () => {
                 data={[
                   { value: "email", label: "Email Address" },
                   { value: "name", label: "Employee Name" },
-                  { value: "studentId", label: "Student ID" },
-                  { value: "passport", label: "Passport Number" },
+                  { value: "studentId", label: "Employee ID" },
+                  { value: "passport", label: "SIN Number" },
                 ]}
                 onChange={(val) => searchBy(val)}
               />
@@ -331,6 +334,7 @@ const Contacts = () => {
           </Grid>
         </Grid.Col>
       </Grid>
+
       <Grid mb="10px" justify="space-between">
         <Grid.Col span={6}>
           <Button variant="outline" radius="xl" mr="10px">
@@ -338,34 +342,16 @@ const Contacts = () => {
               label={<Text>Select All</Text>}
               size="xs"
               checked={selectAll}
-              onClick={(event) => {
-                setSelectAll(event.currentTarget.checked);
-              }}
+              onClick={(event) => setSelectAll(event.currentTarget.checked)}
             />
           </Button>
-
-          <Menu withArrow style={{ top: "-2px" }}>
-            <Menu.Target>
-              <Button variant="outline" radius="xl">
-                More
-                <IconChevronDown size="12" />
-              </Button>
-            </Menu.Target>
-            <Menu.Dropdown>
-              <Menu.Label>Notfications</Menu.Label>
-              <Menu.Item
-                icon={<IconMessage size="14" color="purple" />}
-                onClick={() => {
-                  setSendSmS(true);
-                }}
-              >
-                Send SMS
-              </Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
+          <Button variant="outline" radius="xl" style={{ top: "3px" }}>
+            <IconDeviceFloppy size="20" />
+            <Text style={{ marginLeft: "5px" }}>Save</Text>
+          </Button>
         </Grid.Col>
         <Grid.Col span={3} offset={3} className={classes.actionButtons}>
-          <Button onClick={console.log(checked)}>Run Payroll</Button>
+          <Button onClick={() => setPayrollModal(true)}>Run Payroll</Button>
         </Grid.Col>
       </Grid>
 
@@ -375,25 +361,23 @@ const Contacts = () => {
           description="Creating availability schedules allows you to manage availability across event types. They can be applied to one or more event types.              "
           icon={<IconClipboardList size="40" />}
         />
-      ) : !isLoading ? (
+      ) : !false ? (
         <>
-          <Card p="0" mb="30px">
+          <Card p="0" radius="md" mb="30px">
             <ScrollArea>
               <Table
                 sx={{ minWidth: 800 }}
-                verticalSpacing="md"
-                horizontalSpacing="sm"
-                fontSize="sm"
+                verticalSpacing="xs"
                 highlightOnHover
               >
                 <thead className={classes.thead}>
                   <tr>
                     <th>Employee Name</th>
-                    <th>Employee No</th>
+                    <th>Employee N</th>
                     <th>Email</th>
-                    <th>Phone</th>
-                    <th>Country</th>
-                    <th>Date of birth</th>
+                    <th>Security question</th>
+                    <th>Security Answer</th>
+                    <th>Amount</th>
                     <th />
                   </tr>
                 </thead>
@@ -414,4 +398,4 @@ const Contacts = () => {
   );
 };
 
-export default Contacts;
+export default RunPayroll;

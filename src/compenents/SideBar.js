@@ -26,8 +26,8 @@ const useStyles = createStyles((theme, _params, getRef) => {
     navbar: {
       zIndex: "1",
       background: "#f9fafb",
-      width: "220px !important",
-      minWidth: "220px !important",
+      width: "270px !important",
+      minWidth: "270px !important",
       float: "left",
       position: "fixed",
       height: "100vh",
@@ -36,6 +36,8 @@ const useStyles = createStyles((theme, _params, getRef) => {
     header: {
       paddingTop: theme.spacing.md * 1.5,
       paddingBottom: theme.spacing.md * 1.5,
+      gap: "0px",
+      marginLeft: "10px",
     },
 
     footer: {
@@ -58,7 +60,7 @@ const useStyles = createStyles((theme, _params, getRef) => {
         theme.colorScheme === "dark"
           ? theme.colors.dark[9]
           : theme.colors.gray[9],
-      padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
+      padding: `${theme.spacing.sm}px ${theme.spacing.sm}px`,
       borderRadius: theme.radius.sm,
       fontWeight: 500,
       cursor: "pointer",
@@ -175,15 +177,18 @@ const SideBar = ({ data, toggleOpened, toggleOpenedStatus }) => {
         <Group className={classes.header}>
           <Title
             align="left"
-            ml="10px"
             sx={(theme) => ({
               fontWeight: 800,
-              fontSize: "20px",
+              fontSize: "28px",
               width: "100%",
             })}
           >
-            Oxcean
+            CREW
           </Title>
+
+          <Text color="dimmed" size="xs">
+            deep.shiv880@gmail.com
+          </Text>
         </Group>
         {links}
 

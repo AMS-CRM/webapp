@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Register from "./pages/Register";
 import Applications from "./pages/Applications";
 import Payroll from "./pages/Payroll";
+import RunPayroll from "./pages/RunPayroll";
 
 import Contacts from "./pages/Contacts";
 import Contact from "./pages/Contact";
@@ -26,6 +27,8 @@ function App() {
             <Route path="/contacts/:page" element={<Contacts />} />
             <Route path="/Dashboard" element={<Dashboard />} />
             <Route path="/Payrolls" element={<Payroll />} />
+            <Route path="/Payrolls/run" element={<RunPayroll />} />
+            <Route path="/Payrolls/run/:page" element={<RunPayroll />} />
             <Route path="/Contact/:id" element={<Contact />} />
             <Route path="/whatsapp" element={<WhatsApp />} />
           </Route>
