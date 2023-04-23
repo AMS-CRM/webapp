@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import { payrollList } from "../features/payrolls/payrollSlice";
+import { payrollList, reset } from "../features/payrolls/payrollSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { hash } from "../utils/hash";
@@ -60,9 +60,11 @@ const Payroll = () => {
   } = useSelector((state) => state.payroll);
   const [sendSmSOpened, setSendSmS] = useState(false);
 
-  useMemo(() => {
+  useEffect(() => {
     dispatch(payrollList());
-  }, []);
+
+    return () => dispatch(reset());
+  }, [dispatch]);
 
   const theme = useMantineTheme();
   const rows =

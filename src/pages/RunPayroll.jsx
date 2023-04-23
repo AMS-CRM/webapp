@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, useRef, useMemo, createRef } from "react";
 import {
   getContacts,
   editContact,
@@ -31,6 +31,7 @@ import {
   Table,
   Button,
   Modal,
+  Loader,
   createStyles,
   Grid,
   Input,
@@ -41,6 +42,7 @@ import {
 import {
   IconSearch,
   IconClipboardList,
+  IconCloudSnow,
   IconDeviceFloppy,
   IconCircleX,
 } from "@tabler/icons";
@@ -72,7 +74,9 @@ const RunPayroll = () => {
     isError,
     isSuccess,
   } = useSelector((state) => state.contacts);
-  const { isLoading: payrollLoading } = useSelector((state) => state.payroll);
+  const { isLoading: payrollLoading, isSuccess: payrollSuccess } = useSelector(
+    (state) => state.payroll
+  );
   const [pages, setPages] = useState(0);
   const [activePage, setActivePage] = useState(parseInt(page) || 1);
   const [searchQuery, setSearchQuery] = useState({
@@ -86,8 +90,9 @@ const RunPayroll = () => {
   const [selectAll, setSelectAll] = useState(false);
   const [sendSmSOpened, setSendSmS] = useState(false);
   const [payrollModal, setPayrollModal] = useState(false);
-  const [formData, setFormData] = useRef({});
-  console.log(formData);
+  const [saveStatus, setSavedStatus] = useState(true);
+  const rows = useRef({});
+
   useMemo(() => {
     dispatch(getContacts({ page }));
   }, []);
@@ -103,8 +108,14 @@ const RunPayroll = () => {
       setOpened(false);
     }
 
+    if (payrollModal && payrollSuccess) {
+      navigate("/Payrolls");
+    }
+
+    setSavedStatus(!isLoading);
+
     return () => dispatch(reset());
-  }, [data, isSuccess, dispatch]);
+  }, [data, isSuccess, isLoading, payrollSuccess, dispatch]);
 
   const setPage = (page) => {
     dispatch(getContacts({ page }));
@@ -127,6 +138,7 @@ const RunPayroll = () => {
       search,
     }));
 
+    setSavedStatus(true);
     dispatch(getContacts({ page: 0, search, keyword }));
   };
 
@@ -161,22 +173,15 @@ const RunPayroll = () => {
   };
 
   const onInputChange = (e, user) => {
-    const data = {
-      ...formData[user],
-      [e.target.name]: e.target.value,
-    };
-
-    // Update the back-end based on the local state
-    const payload = {
-      user,
-      payroll: data,
-    };
-    setFormData({
-      ...formData,
-      [user]: data,
-    });
-    // Send backend request
-    dispatch(editContact(payload));
+    // Compose the data for the
+    dispatch(
+      editContact({
+        user,
+        payroll: {
+          [e.target.name]: e.target.value,
+        },
+      })
+    );
   };
 
   const openContact = (id) => {
@@ -188,110 +193,112 @@ const RunPayroll = () => {
   };
 
   const theme = useMantineTheme();
-  const rows =
+
+  const sheet =
     data &&
     data.contacts.length > 0 &&
     data.contacts.map((item) => (
-      <tr key={item._id} onClick={() => openContact(item._id)}>
-        <td>
-          <Group spacing="sm">
-            <Checkbox
-              size="xs"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleCheckedItems(item._id);
-              }}
-              mt="6px"
-              checked={itemCheckedStatus(item._id)}
-            />
-            <Avatar
-              color={colors[hash(item.firstName)]}
-              radius="xl"
-              variant="filled"
-              size="md"
-            >
-              {getInitials(`${item.firstName} ${item.lastName}`)}
-            </Avatar>
-            <div>
-              <Text size="sm" weight={400}>
-                {`${item.firstName} ${item.lastName}`}
-              </Text>
-              {/*
-                <Text size="xs" weight={400} color="dimmed">
-                  {item.email}
+      <>
+        <tr key={item._id} onClick={() => openContact(item._id)}>
+          <td>
+            <Group spacing="sm">
+              <Checkbox
+                size="xs"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleCheckedItems(item._id);
+                }}
+                mt="6px"
+                checked={itemCheckedStatus(item._id)}
+              />
+              <Avatar
+                color={colors[hash(item.firstName)]}
+                radius="xl"
+                variant="filled"
+                size="md"
+              >
+                {getInitials(`${item.firstName} ${item.lastName}`)}
+              </Avatar>
+              <div>
+                <Text size="sm" weight={400}>
+                  {`${item.firstName} ${item.lastName}`}
                 </Text>
-            */}
-            </div>
-          </Group>
-        </td>
+              </div>
+            </Group>
+          </td>
 
-        <td>{item.passport}</td>
-        <td>
-          <Anchor size="sm" href="#">
-            {item.email}
-          </Anchor>
-        </td>
+          <td>{item.passport}</td>
+          <td>
+            <Anchor size="sm" href="#">
+              {item.email}
+            </Anchor>
+          </td>
 
-        <td>
-          <Input.Wrapper
-            style={{ width: "120px" }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Input
-              placeholder="Security Question "
-              name="securityQuestion"
-              size="sm"
-              radius="md"
-              onChange={(e) => onInputChange(e, item._id)}
-              value={
-                formData?.[item._id]?.securityQuestion ??
-                item?.payroll?.securityQuestion
-              }
-            />
-          </Input.Wrapper>
-        </td>
-        <td>
-          <Input.Wrapper
-            style={{ width: "100px" }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <PasswordInput
-              placeholder="Last Name"
-              name="securityAnswer"
-              size="sm"
-              radius="sm"
-              onChange={(e) => onInputChange(e, item._id)}
-              value={
-                formData?.[item._id]?.securityAnswer ??
-                item?.payroll?.securityAnswer
-              }
-            />
-          </Input.Wrapper>
-        </td>
-        <td>
-          <Input.Wrapper
-            style={{ width: "100px" }}
-            onClick={(e) => e.stopPropagation(e, item._id)}
-          >
-            <Input
-              placeholder="amount"
-              name="amount"
-              size="sm"
-              radius="sm"
-              onChange={(e) => onInputChange(e, item._id)}
-              value={
-                formData?.[item._id]?.amount ?? item?.payroll?.amount ?? "0"
-              }
-            />
-          </Input.Wrapper>
-        </td>
-      </tr>
+          <td>
+            <Input.Wrapper
+              style={{ width: "120px" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Input
+                placeholder="Security Questions"
+                name="securityQuestion"
+                size="sm"
+                radius="md"
+                onChange={() => setSavedStatus(false)}
+                ref={(el) =>
+                  (rows.current[`${item._id}_securityQuestion`] = el)
+                }
+                defaultValue={item.payroll.securityQuestion}
+                onBlur={(e) => onInputChange(e, item._id)}
+              />
+            </Input.Wrapper>
+          </td>
+          <td>
+            <Input.Wrapper
+              style={{ width: "100px" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <PasswordInput
+                placeholder="Last Name"
+                name="securityAnswer"
+                size="sm"
+                onChange={() => setSavedStatus(false)}
+                radius="sm"
+                onBlur={(e) => onInputChange(e, item._id)}
+                ref={(el) => (rows.current[`${item._id}_securityAnswer`] = el)}
+                defaultValue={item.payroll.securityAnswer}
+              />
+            </Input.Wrapper>
+          </td>
+          <td>
+            <Input.Wrapper
+              style={{ width: "100px" }}
+              onClick={(e) => e.stopPropagation(e, item._id)}
+            >
+              <Input
+                placeholder="amount"
+                name="amount"
+                size="sm"
+                radius="sm"
+                onChange={() => setSavedStatus(false)}
+                onBlur={(e) => onInputChange(e, item._id)}
+                ref={(el) => (rows.current[`${item._id}_amount`] = el)}
+                defaultValue={item.payroll.amount}
+              />
+            </Input.Wrapper>
+          </td>
+        </tr>
+      </>
     ));
 
   return (
     <Container size="xl" mb="100px" className="page-content">
-      <Modal opened={payrollModal} onClose={() => setPayrollModal(false)}>
-        <Text>Are you sure you want to run payroll?</Text>
+      <Modal
+        opened={payrollModal}
+        onClose={() => setPayrollModal(false)}
+        title="Run Payroll"
+      >
+        <Text>List of user to run payroll</Text>
         <Button onClick={() => handleRunPayroll()} loading={payrollLoading}>
           Run payroll
         </Button>
@@ -345,10 +352,22 @@ const RunPayroll = () => {
               onClick={(event) => setSelectAll(event.currentTarget.checked)}
             />
           </Button>
-          <Button variant="outline" radius="xl" style={{ top: "3px" }}>
-            <IconDeviceFloppy size="20" />
-            <Text style={{ marginLeft: "5px" }}>Save</Text>
-          </Button>
+          {saveStatus ? (
+            <Group position="center" display="inline">
+              <IconCloudSnow
+                size="20"
+                style={{ top: "3px", position: "relative" }}
+              />
+              <Text display="inline" ml="5px">
+                Saved
+              </Text>
+            </Group>
+          ) : (
+            <Group display="inline">
+              <Loader size="20" style={{ top: "3px", position: "relative" }} />
+              <Text display="inline">Saving...</Text>
+            </Group>
+          )}
         </Grid.Col>
         <Grid.Col span={3} offset={3} className={classes.actionButtons}>
           <Button onClick={() => setPayrollModal(true)}>Run Payroll</Button>
@@ -381,7 +400,7 @@ const RunPayroll = () => {
                     <th />
                   </tr>
                 </thead>
-                <tbody>{rows}</tbody>
+                <tbody>{sheet}</tbody>
               </Table>
             </ScrollArea>
           </Card>

@@ -47,7 +47,10 @@ const payrollSlice = createSlice({
   initialState,
   reducers: {
     reset: (state) => {
-      return { ...initialState };
+      return {
+        ...initialState,
+        list: [...state.list],
+      };
     },
   },
   extraReducers: (builder) => {
