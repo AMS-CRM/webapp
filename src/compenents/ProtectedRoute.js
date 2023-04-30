@@ -39,11 +39,6 @@ const links = [
     label: "Run payrolls",
     icon: IconRefresh,
   },
-  {
-    link: "/transactions",
-    label: "Trasactions",
-    icon: IconLayoutList,
-  },
 ];
 
 const ProtectedRoute = ({ children }) => {

@@ -202,16 +202,19 @@ const Contacts = () => {
               <Text size="sm" weight={600} color="blue.9">
                 {`${item.firstName} ${item.lastName}`}
               </Text>
-              {/*
+              {
                 <Text size="xs" weight={400} color="dimmed">
                   {item.email}
                 </Text>
-            */}
+              }
             </div>
           </Group>
         </td>
 
         <td>{item.passport}</td>
+        <td>
+          <Badge color="green">Active</Badge>
+        </td>
         <td>
           <Anchor size="sm" href="#">
             {item.email}
@@ -222,16 +225,7 @@ const Contacts = () => {
             {`${item.phone.number}`}
           </Text>
         </td>
-        <td>
-          <Text size="sm" color="dimmed">
-            {item.nationality}
-          </Text>
-        </td>
-        <td>
-          <Text size="sm" color="dimmed">
-            {moment(item.dob).format("MMM Do YY")}
-          </Text>
-        </td>
+
         <td>
           <Group spacing={0} position="right">
             <ActionIcon>
@@ -343,29 +337,6 @@ const Contacts = () => {
               }}
             />
           </Button>
-
-          <Menu withArrow style={{ top: "-2px" }}>
-            <Menu.Target>
-              <Button variant="outline" radius="xl">
-                More
-                <IconChevronDown size="12" />
-              </Button>
-            </Menu.Target>
-            <Menu.Dropdown>
-              <Menu.Label>Notfications</Menu.Label>
-              <Menu.Item
-                icon={<IconMessage size="14" color="purple" />}
-                onClick={() => {
-                  setSendSmS(true);
-                }}
-              >
-                Send SMS
-              </Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
-        </Grid.Col>
-        <Grid.Col span={3} offset={3} className={classes.actionButtons}>
-          <Button onClick={console.log(checked)}>Run Payroll</Button>
         </Grid.Col>
       </Grid>
 
@@ -381,19 +352,18 @@ const Contacts = () => {
             <ScrollArea>
               <Table
                 sx={{ minWidth: 800 }}
-                verticalSpacing="md"
-                horizontalSpacing="sm"
+                verticalSpacing="lg"
+                horizontalSpacing="lg"
                 fontSize="sm"
                 highlightOnHover
               >
-                <thead className={classes.thead}>
+                <thead>
                   <tr>
                     <th>Employee Name</th>
                     <th>Employee No</th>
                     <th>Email</th>
+                    <th>Status</th>
                     <th>Phone</th>
-                    <th>Country</th>
-                    <th>Date of birth</th>
                     <th />
                   </tr>
                 </thead>

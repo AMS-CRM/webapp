@@ -1,6 +1,7 @@
 import axiosDefault from "../../utils/axios";
 
 const CONTACTS = "contacts";
+const CONTACT = "contacts/get";
 
 // Get the list of all contacts
 const getContacts = async (data) => {
@@ -9,6 +10,12 @@ const getContacts = async (data) => {
     : `${CONTACTS}/${data.page}/${data.search}/${data.keyword}`;
   const response = await axiosDefault.get(URL);
   return response.data;
+};
+
+// Get the individual contact
+const getContactWithEmail = async (email) => {
+  const response = await axiosDefault.get(`${CONTACT}/${email}`);
+  return response.data.data;
 };
 
 // Create new contact
@@ -34,6 +41,7 @@ const contactService = {
   createContact,
   deleteContact,
   editContact,
+  getContactWithEmail,
 };
 
 export default contactService;

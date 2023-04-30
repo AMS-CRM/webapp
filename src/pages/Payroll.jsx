@@ -1,11 +1,12 @@
 import { useEffect, useState, useMemo } from "react";
 import { payrollList, reset } from "../features/payrolls/payrollSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { hash } from "../utils/hash";
 import TableLoader from "../compenents/TableLoader";
 import { useError } from "../hooks/useError";
 import SendSmS from "../compenents/SendSmS";
+import moment from "moment";
 import {
   Group,
   Text,
@@ -42,9 +43,11 @@ const useStyles = createStyles((theme) => ({
 }));
 
 const colors = {
+  "Under Review": "blue",
   Pending: "yellow",
-  Completed: "green",
   Processing: "black",
+  Completed: "green",
+  Error: "red",
 };
 
 const Payroll = () => {
@@ -71,7 +74,11 @@ const Payroll = () => {
     data &&
     data.length > 0 &&
     data.map((item) => (
-      <tr key={item._id} className={classes.tbody}>
+      <tr
+        onClick={() => navigate(`/Payrolls/${item.payrollNo}`)}
+        key={item._id}
+        className={classes.tbody}
+      >
         <td p="20">
           <Group spacing="sm">
             <div>
@@ -97,7 +104,7 @@ const Payroll = () => {
         </td>
         <td>
           <Anchor size="sm" href="#">
-            12th Feb - 20th feburary
+            {moment(item.createdOn).format("DD MMMM, YYYY")}
           </Anchor>
         </td>
         <td>
@@ -110,7 +117,7 @@ const Payroll = () => {
             >
               {item.status}
             </Text>
-            <Loader size="20" />
+            {item.status == "Process" && <Loader size="20" />}
           </Group>
         </td>
 

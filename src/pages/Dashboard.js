@@ -1,12 +1,42 @@
-import { Grid, Title, Card, Container, Text, Paper } from "@mantine/core";
+import {
+  Grid,
+  Title,
+  Card,
+  Container,
+  Text,
+  Paper,
+  Group,
+  Button,
+  BackgroundImage,
+} from "@mantine/core";
 import fogg from "../assets/fogg-waiting-2.png";
 import "../dashboard.css";
 import WelcomeHeader from "../compenents/WelcomeHeader";
+import CardBg from "../assets/card.png";
 
 const Dashboard = () => {
   return (
     <Container size="lg" className="page-content">
       <WelcomeHeader />
+      <Grid mt="lg">
+        <Grid.Col span={4}>
+          <Card shadow="xs" withBorder radius="md" backgroundColor="red">
+            <Grid>
+              <Grid.Col>
+                <Text weight={500} size="24px">
+                  $1200
+                </Text>
+                <Text color="dimmd"> Current Balance</Text>
+              </Grid.Col>
+              <Grid.Col>
+                <Button variant="light" color="blue.9">
+                  Fund Account
+                </Button>
+              </Grid.Col>
+            </Grid>
+          </Card>
+        </Grid.Col>
+      </Grid>
       <Paper withBorder p="lg" mt="30px">
         <Title order={3}>Totals</Title>
         <Text size="sm" color="dimmed">

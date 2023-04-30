@@ -7,7 +7,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f1f3f4;
+  /*background-color: #f1f3f4;*/
 }
 
 code {
@@ -18,10 +18,14 @@ td {
   border-bottom: 1px solid #f4f4f4 !important;
   cursor: pointer !important;
 }
+a {
+  color: black;
+  text-decoration: none;
+}
 .page-content {
   top: 47px;
-  margin-left: 300px;
   position: relative;
+  margin-left: 300px;
   margin-right: 26px;
   max-width: none !important;
 }

@@ -10,6 +10,7 @@ import {
   Paper,
   Button,
   Tooltip,
+  Badge,
 } from "@mantine/core";
 import {
   IconArrowBarRight,
@@ -20,66 +21,98 @@ import {
   IconClock,
   IconTimeline,
 } from "@tabler/icons";
+import { getContactWithEmail, reset } from "../features/contacts/contactSlice";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
+import { useParams } from "react-router-dom";
 
 const Contact = () => {
+  const dispatch = useDispatch();
+  const { email } = useParams();
+  const { contact, isLoading, isError, isSuccess, message } = useSelector(
+    (state) => state.contacts
+  );
+  useEffect(() => {
+    if (email) {
+      dispatch(getContactWithEmail(email));
+    }
+    return () => dispatch(reset());
+  }, [email]);
+
   return (
-    <Container size="md" className="page-content">
-      <Grid>
-        <Grid.Col span={6}>
-          <Title order={3}>Employee Information</Title>
-          <Text color="dimmed" size="sm" mb="30px">
-            Manage a employee.
-          </Text>
-        </Grid.Col>
-      </Grid>
-      <Grid>
-        <Grid.Col span={3}>
-          <Card mb="20px">
-            <Group spacing="sm">
+    isSuccess &&
+    contact && (
+      <Container size="md" className="page-content">
+        <Grid align="center">
+          <Grid.Col span={12}>
+            <Group>
               <Avatar size="lg" radius="100%" color="red">
                 SS
               </Avatar>
               <div>
-                <Text size="sm" weight={500}>
-                  Shivdeep Singh
-                </Text>
-                <Text size="xs" weight={400} color="dimmed">
-                  deep.shiv880@gmail.com
+                <Title>{`${contact.firstName} ${contact.lastName}`}</Title>
+                <Text color="dimmed" size="sm" mb="30px">
+                  {contact.email}
                 </Text>
               </div>
+              <Badge color="green" variant="light">
+                Active
+              </Badge>
             </Group>
-          </Card>
-        </Grid.Col>
-        <Grid.Col span={9}>
-          <Paper p="xl">
-            <Table horizontalSpacing="sm" verticalSpacing="md">
-              <thead>
-                <tr>
-                  <td>
-                    <Title order={3} mb="10px">
-                      Payroll Hirstory
-                    </Title>
-                  </td>
-                </tr>
-              </thead>
-
-              <tbody>
-                <tr p="10">
-                  <td>
-                    <strong>Name</strong>
-                    <Text>Shivdeep Singh</Text>
-                  </td>
-                  <td>
-                    <strong>Email</strong>
-                    <Text>deep.shiv880@gmail.com</Text>
-                  </td>
-                </tr>
-              </tbody>
-            </Table>
-          </Paper>
-        </Grid.Col>
-      </Grid>
-    </Container>
+          </Grid.Col>
+        </Grid>
+        <Grid>
+          <Grid.Col span={5}>
+            <Card shadow="sm" radius="md" withBorder>
+              <Text my="10px" weight={400}>
+                Total Earnings
+              </Text>
+              <Text weight={600} size="36px">
+                $1200
+              </Text>
+            </Card>
+          </Grid.Col>
+          <Grid.Col span={7}>
+            <Card shadow="sm" radius="md" withBorder>
+              <Text my="10px" weight={400}>
+                Payroll History
+              </Text>
+              <Card style={{ background: "#f1f1f1" }} radius="md">
+                <Grid>
+                  <Grid.Col span={12}>
+                    <Grid.Col span={4}>
+                      <Text weight="500">For September, 2023</Text>
+                      <Text color="dimmed" size="sm">
+                        Weekly Regular
+                      </Text>
+                    </Grid.Col>
+                    <Grid.Col span={4}>
+                      <Text align="right">$1300</Text>
+                    </Grid.Col>
+                  </Grid.Col>
+                </Grid>
+              </Card>
+              <Card style={{ background: "#f1f1f1" }} radius="md" mt="10px">
+                <Grid>
+                  <Grid.Col span={12}>
+                    <Grid.Col span={4}>
+                      <Text weight="500">For September, 2023</Text>
+                      <Text color="dimmed" size="sm">
+                        Weekly Regular
+                      </Text>
+                    </Grid.Col>
+                    <Grid.Col span={4}>
+                      <Text align="right">$1300</Text>
+                    </Grid.Col>
+                  </Grid.Col>
+                </Grid>
+              </Card>
+            </Card>
+          </Grid.Col>
+        </Grid>
+      </Container>
+    )
   );
 };
 

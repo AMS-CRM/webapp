@@ -1,38 +1,53 @@
 import { useState, forwardRef, useMemo, useEffect } from "react";
-import { Title, Input, Grid, Button, Group, Avatar, Text, Select } from "@mantine/core";
+import {
+  Title,
+  Input,
+  Grid,
+  Button,
+  Group,
+  Avatar,
+  Text,
+  Select,
+} from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
 import { IconEPassport, IconAt } from "@tabler/icons";
 import countryFlagEmoji from "country-flag-emoji";
 import PhoneInput from "./PhoneInput";
 import { useDispatch, useSelector } from "react-redux";
-import { useError } from "../hooks/useError"
+import { useError } from "../hooks/useError";
 
-import { getCountries } from "../features/countries/countriesSlice"
-import { getContacts, createContact, reset } from "../features/contacts/contactSlice"
+import { getCountries } from "../features/countries/countriesSlice";
+import {
+  getContacts,
+  createContact,
+  reset,
+} from "../features/contacts/contactSlice";
 import { useNavigate, useLocation } from "react-router-dom";
 
-
-const CreateContact = ({onClose}) => {
-
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-  const location = useLocation()
-  const { data } = useSelector(state => state.countries)
-  const { isError, isSuccess, message, isLoading, contact } = useSelector(state => state.contacts)
-  const [errors, setErrors] = useError("contacts")
+const CreateContact = ({ onClose }) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { data } = useSelector((state) => state.countries);
+  const { isError, isSuccess, message, isLoading, contact } = useSelector(
+    (state) => state.contacts
+  );
+  const [errors, setErrors] = useError("contacts");
   const [formData, setFormData] = useState({});
-  useEffect(() => { dispatch(getCountries())}, [])
+  useEffect(() => {
+    dispatch(getCountries());
+  }, []);
 
   useEffect(() => {
-
-    if ( isSuccess ) {
-      onClose(false)
-      location.pathname != "/contacts" ? navigate("/contacts") : dispatch(getContacts({ page: 0 }))
+    if (isSuccess) {
+      onClose(false);
+      location.pathname != "/contacts"
+        ? navigate("/contacts")
+        : dispatch(getContacts({ page: 0 }));
     }
 
-    return (() => dispatch(reset()))
-
-  }, [isSuccess])
+    return () => dispatch(reset());
+  }, [isSuccess]);
 
   const onChange = (e) => {
     setFormData({
@@ -44,49 +59,50 @@ const CreateContact = ({onClose}) => {
   const onDialCodeChange = (value) => {
     setFormData({
       ...formData,
-      dial_code: value
-    })
-  }
+      dial_code: value,
+    });
+  };
 
   const dial_code = useMemo(() => {
     return data.map((item) => {
-        return { ...item, value: item.name, label: `${item.flag} ${item.dial_code}` }
-    })
-  })
+      return {
+        ...item,
+        value: item.name,
+        label: `${item.flag} ${item.dial_code}`,
+      };
+    });
+  });
 
   const countryList = useMemo(() => {
     return data.map((item) => {
-        return { ...item, value: item.name, label: item.name }
-    })
-  })
+      return { ...item, value: item.name, label: item.name };
+    });
+  });
 
   const onSubmit = (e) => {
     e.preventDefault();
-    setErrors({})
+    setErrors({});
     dispatch(createContact(formData));
-  }
+  };
 
- 
-
-  const CountriesList = forwardRef(({ flag, name, code, ...others}, ref) => (
-    <div  ref={ref} {...others}>
+  const CountriesList = forwardRef(({ flag, name, code, ...others }, ref) => (
+    <div ref={ref} {...others}>
       <Group noWrap>
         <Text size="lg">{flag}</Text>
-       <div>
+        <div>
           <Text size="sm">{name}</Text>
-          <Text size="xs" opacity={0.65} >
+          <Text size="xs" opacity={0.65}>
             Country Code: {code}
           </Text>
         </div>
       </Group>
     </div>
-  ))
-
+  ));
 
   return (
     <>
       <Title order={2} mb="6px">
-        Create Profile
+        Create Employee
       </Title>
       <Title order={5} mb="30px" weight="400">
         Create a user applicant's profile using passport data.
@@ -95,7 +111,12 @@ const CreateContact = ({onClose}) => {
       <form onSubmit={onSubmit}>
         <Grid>
           <Grid.Col span={6} justify="center">
-            <Input.Wrapper label="First Name" size="xs" error={(errors && errors.firstName) && errors.firstName} required>
+            <Input.Wrapper
+              label="First Name"
+              size="xs"
+              error={errors && errors.firstName && errors.firstName}
+              required
+            >
               <Input
                 placeholder="First Name"
                 name="firstName"
@@ -107,7 +128,12 @@ const CreateContact = ({onClose}) => {
             </Input.Wrapper>
           </Grid.Col>
           <Grid.Col span={6}>
-            <Input.Wrapper label="Last Name" error={(errors && errors.lastName) && errors.lastName}  size="xs" required>
+            <Input.Wrapper
+              label="Last Name"
+              error={errors && errors.lastName && errors.lastName}
+              size="xs"
+              required
+            >
               <Input
                 placeholder="Last Name"
                 name="lastName"
@@ -120,7 +146,12 @@ const CreateContact = ({onClose}) => {
           </Grid.Col>
 
           <Grid.Col span={12}>
-            <Input.Wrapper size="sm" size="xs" error={(errors && errors.middleName) && errors.middleName} label="Middle Name">
+            <Input.Wrapper
+              size="sm"
+              size="xs"
+              error={errors && errors.middleName && errors.middleName}
+              label="Middle Name"
+            >
               <Input
                 placeholder="Middle Name"
                 size="md"
@@ -133,7 +164,12 @@ const CreateContact = ({onClose}) => {
           </Grid.Col>
 
           <Grid.Col span={12}>
-            <Input.Wrapper label="Email"  size="xs"  error={(errors && errors.email) && errors.email} required>
+            <Input.Wrapper
+              label="Email"
+              size="xs"
+              error={errors && errors.email && errors.email}
+              required
+            >
               <Input
                 placeholder="Email"
                 size="md"
@@ -148,19 +184,24 @@ const CreateContact = ({onClose}) => {
 
           <Grid.Col>
             <DatePicker
-                placeholder="Data of Birth"
-                label="Date of birth"
-                size="md"
-                error={(errors && errors.dob) && errors.dob}
-                radius="md"
-                withAsterisk
-                value={formData.dob} 
-                onChange={(value) => setFormData({ ...formData, dob: value})}
-              />
+              placeholder="Data of Birth"
+              label="Date of birth"
+              size="md"
+              error={errors && errors.dob && errors.dob}
+              radius="md"
+              withAsterisk
+              value={formData.dob}
+              onChange={(value) => setFormData({ ...formData, dob: value })}
+            />
           </Grid.Col>
 
-         <Grid.Col span={12}>
-            <Input.Wrapper label="Passport Number"  size="xs"   error={(errors && errors.passport) && errors.passport} required>
+          <Grid.Col span={12}>
+            <Input.Wrapper
+              label="Passport Number"
+              size="xs"
+              error={errors && errors.passport && errors.passport}
+              required
+            >
               <Input
                 placeholder="Passport"
                 size="md"
@@ -174,38 +215,45 @@ const CreateContact = ({onClose}) => {
           </Grid.Col>
 
           <Grid.Col span={12}>
-            <PhoneInput 
+            <PhoneInput
               countries={dial_code}
               onDialCodeChange={onDialCodeChange}
               onChange={onChange}
               phoneNumber={formData.phone}
-              dial_code_error={(errors && errors.dial_code) && errors.dial_code}
-               phone_error={(errors && errors.phone) && errors.phone}
+              dial_code_error={errors && errors.dial_code && errors.dial_code}
+              phone_error={errors && errors.phone && errors.phone}
             />
           </Grid.Col>
 
           <Grid.Col span={12}>
-           <Select
-                label="Country of Birth"
-                placeholder="Country of Birth"
-                itemComponent={CountriesList}
-                data={countryList}
-                size="sm"
-                 error={(errors && errors.nationality) && errors.nationality}
-                onChange={(value) => setFormData({...formData, nationality: value})}
-                dropdownPosition="bottom"
-                maxDropdownHeight={200}
-                nothingFound="No Countries found"
-                searchable
-                filter={(value, item) =>
-                    item.label.toLowerCase().includes(value.toLowerCase().trim())
-                }   
+            <Select
+              label="Country of Birth"
+              placeholder="Country of Birth"
+              itemComponent={CountriesList}
+              data={countryList}
+              size="sm"
+              error={errors && errors.nationality && errors.nationality}
+              onChange={(value) =>
+                setFormData({ ...formData, nationality: value })
+              }
+              dropdownPosition="bottom"
+              maxDropdownHeight={200}
+              nothingFound="No Countries found"
+              searchable
+              filter={(value, item) =>
+                item.label.toLowerCase().includes(value.toLowerCase().trim())
+              }
             />
-    
           </Grid.Col>
 
-           <Grid.Col span={12}>
-            <Input.Wrapper label="Address" description="Current residentail address"  size="xs"  error={(errors && errors.address) && errors.address} required>
+          <Grid.Col span={12}>
+            <Input.Wrapper
+              label="Address"
+              description="Current residentail address"
+              size="xs"
+              error={errors && errors.address && errors.address}
+              required
+            >
               <Input
                 placeholder="Address"
                 size="md"
@@ -217,8 +265,13 @@ const CreateContact = ({onClose}) => {
             </Input.Wrapper>
           </Grid.Col>
 
-         <Grid.Col span={6}>
-            <Input.Wrapper label="State/Provience"  size="xs"  error={(errors && errors.state) && errors.state} required>
+          <Grid.Col span={6}>
+            <Input.Wrapper
+              label="State/Provience"
+              size="xs"
+              error={errors && errors.state && errors.state}
+              required
+            >
               <Input
                 placeholder="State"
                 size="md"
@@ -230,8 +283,13 @@ const CreateContact = ({onClose}) => {
             </Input.Wrapper>
           </Grid.Col>
 
-           <Grid.Col span={6}>
-            <Input.Wrapper label="City"  size="xs"  error={(errors && errors.city) && errors.city} required>
+          <Grid.Col span={6}>
+            <Input.Wrapper
+              label="City"
+              size="xs"
+              error={errors && errors.city && errors.city}
+              required
+            >
               <Input
                 placeholder="City"
                 size="md"
@@ -243,11 +301,16 @@ const CreateContact = ({onClose}) => {
             </Input.Wrapper>
           </Grid.Col>
 
-             <Grid.Col span={12}>
-            <Input.Wrapper label="Postal Code"  size="xs"  error={(errors && errors.postalCode) && errors.postalCode} required>
+          <Grid.Col span={12}>
+            <Input.Wrapper
+              label="Postal Code"
+              size="xs"
+              error={errors && errors.postalCode && errors.postalCode}
+              required
+            >
               <Input
                 placeholder="City"
-                 size="md"
+                size="md"
                 radius="md"
                 name="postalCode"
                 onChange={onChange}
@@ -255,7 +318,6 @@ const CreateContact = ({onClose}) => {
               />
             </Input.Wrapper>
           </Grid.Col>
-          
 
           <Grid.Col span={4}>
             <Button type="submit" loading={isLoading}>

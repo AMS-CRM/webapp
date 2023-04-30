@@ -10,6 +10,7 @@ import Register from "./pages/Register";
 import Applications from "./pages/Applications";
 import Payroll from "./pages/Payroll";
 import RunPayroll from "./pages/RunPayroll";
+import PayrollView from "./pages/PayrollView";
 
 import Contacts from "./pages/Contacts";
 import Contact from "./pages/Contact";
@@ -28,8 +29,9 @@ function App() {
             <Route path="/Dashboard" element={<Dashboard />} />
             <Route path="/Payrolls" element={<Payroll />} />
             <Route path="/Payrolls/run" element={<RunPayroll />} />
+            <Route path="/Payrolls/:payroll" element={<PayrollView />} />
             <Route path="/Payrolls/run/:page" element={<RunPayroll />} />
-            <Route path="/Contact/:id" element={<Contact />} />
+            <Route path="/Contact/:email" element={<Contact />} />
             <Route path="/whatsapp" element={<WhatsApp />} />
           </Route>
           <Route path="/login" element={<Login />} />

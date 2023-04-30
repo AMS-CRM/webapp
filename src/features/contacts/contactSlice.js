@@ -27,6 +27,24 @@ export const createContact = createAsyncThunk(
   }
 );
 
+// Get a contact
+export const getContactWithEmail = createAsyncThunk(
+  "contacts/getContactWithEmail",
+  async (email, thunkAPI) => {
+    try {
+      return await contactService.getContactWithEmail(email);
+    } catch (error) {
+      const message =
+        error.response ||
+        error.response.data ||
+        error.response.data.message ||
+        error.message ||
+        error.toString;
+      thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 // Delete contact
 export const deleteContact = createAsyncThunk(
   "contacts/deleteContact",
@@ -138,6 +156,21 @@ const contactSlice = createSlice({
         state.isSuccess = true;
       })
       .addCase(editContact.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.isSuccess = false;
+        state.message = action.payload;
+      })
+      .addCase(getContactWithEmail.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+      })
+      .addCase(getContactWithEmail.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.contact = action.payload;
+      })
+      .addCase(getContactWithEmail.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.isSuccess = false;
