@@ -169,8 +169,8 @@ const Contacts = () => {
     dispatch(getContacts({ page: 0, search, keyword }));
   };
 
-  const openContact = (id) => {
-    navigate(`/contact/${id}`);
+  const openContact = (email) => {
+    navigate(`/contact/${email}`);
   };
 
   const theme = useMantineTheme();
@@ -178,7 +178,7 @@ const Contacts = () => {
     data &&
     data.contacts.length > 0 &&
     data.contacts.map((item) => (
-      <tr key={item._id} onClick={() => openContact(item._id)}>
+      <tr key={item._id} onClick={() => openContact(item.email)}>
         <td>
           <Group spacing="sm">
             <Checkbox
