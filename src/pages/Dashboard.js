@@ -11,6 +11,7 @@ import {
   Flex,
   Stack,
   Badge,
+  SimpleGrid,
 } from "@mantine/core";
 import fogg from "../assets/fogg-waiting-2.png";
 import "../dashboard.css";
@@ -18,7 +19,7 @@ import WelcomeHeader from "../compenents/WelcomeHeader";
 import CardImg from "../assets/card.png";
 import nfc from "../assets/nfc.png";
 import abstract from "../assets/abstract.png";
-import check from "../assets/completed.png";
+import system from "../assets/system.png";
 
 const Dashboard = () => {
   return (
@@ -72,31 +73,21 @@ const Dashboard = () => {
           </Card>
         </Grid.Col>
         <Grid.Col span={7}>
-          <Card radius="sm" h="250px" withBorder p="lg">
-            <Grid align="center" justify="center">
-              <Grid.Col span={12}>
-                <Text mt="10px" weight={600} color="gray.7" lin>
-                  PAYROLL STATUS
-                </Text>
-                <Card style={{ background: "#f9f9f9" }} mt="20px">
-                  <Group>
-                    <img src={check} width={40} />
-
-                    <Text weight={400}>
-                      All payroll are completed as per schedule
-                    </Text>
-                  </Group>
-                </Card>
+          <Card h="250px" withBorder>
+            <Grid>
+              <Grid.Col span={8}>
+                <div style={{ marginTop: "40px" }}>
+                  <img src={abstract} width="40px" />
+                  <Text color="gray.7" weight={500} size="18px" my="10px">
+                    To run a bulk payroll click the button below and create a
+                    new batch
+                  </Text>
+                  <Button color="black" variant="outline">
+                    Run payroll
+                  </Button>
+                </div>
               </Grid.Col>
             </Grid>
-            <Button
-              variant="light"
-              color="blue"
-              mt="20px"
-              style={{ float: "right" }}
-            >
-              View All
-            </Button>
           </Card>
         </Grid.Col>
       </Grid>
@@ -111,7 +102,7 @@ const Dashboard = () => {
               5
             </Text>
             <Title order={5} color="dimmed">
-              Total Applications
+              Total Employess
             </Title>
           </Grid.Col>
 
@@ -120,7 +111,7 @@ const Dashboard = () => {
               2
             </Text>
             <Title order={5} color="dimmed">
-              Under Review
+              Total payrolls
             </Title>
           </Grid.Col>
 
@@ -129,7 +120,7 @@ const Dashboard = () => {
               1
             </Text>
             <Title order={5} color="dimmed">
-              Total Rejected
+              Pending approval
             </Title>
           </Grid.Col>
 
@@ -138,7 +129,7 @@ const Dashboard = () => {
               0
             </Text>
             <Title order={5} color="dimmed">
-              Pending Review
+              Currently processing
             </Title>
           </Grid.Col>
         </Grid>
