@@ -7,9 +7,20 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /*background-color: #f1f3f4;*/
+  /*background-color: #f4f3f6; /*
 }
-
+.selectInput input {
+  /*font-weight: 600 !important;*/
+  padding: 0px !important;
+  height: 0px !important;
+}
+.inputBold input {
+  font-weight: 600 !important;
+  font-size: 20px !important;
+}
+.inputBold input:disabled {
+  color: #000 !important;
+}
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
@@ -25,9 +36,10 @@ a {
 .page-content {
   top: 47px;
   position: relative;
-  margin-left: 300px;
+  left: 132px;
+  /* margin-left: 300px;
   margin-right: 26px;
-  max-width: none !important;
+  max-width: none !important;*/
 }
 
 input::placeholder {

@@ -13,20 +13,38 @@ import {
   Badge,
   SimpleGrid,
 } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import fogg from "../assets/fogg-waiting-2.png";
 import "../dashboard.css";
 import WelcomeHeader from "../compenents/WelcomeHeader";
 import CardImg from "../assets/card.png";
 import nfc from "../assets/nfc.png";
 import abstract from "../assets/abstract.png";
+import abstract2 from "../assets/abstract2.png";
 import system from "../assets/system.png";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { dashboard, reset } from "../features/dashboard/dashboardSlice";
 
 const Dashboard = () => {
+  const largeScreen = useMediaQuery("(min-width: 1450px)");
+  const dispatch = useDispatch();
+  const {
+    dashboard: data,
+    isLoading,
+    isSuccess,
+    isError,
+  } = useSelector((state) => state.dashboard);
+
+  useEffect(() => {
+    dispatch(dashboard());
+  }, []);
+
   return (
-    <Container size="lg" className="page-content">
+    <Container size={largeScreen ? "xl" : "md"} className="page-content">
       <WelcomeHeader />
       <Grid mt="lg">
-        <Grid.Col span={5}>
+        <Grid.Col span={largeScreen ? 4 : 5}>
           <Card
             shadow="xs"
             radius="md"
@@ -41,7 +59,7 @@ const Dashboard = () => {
                 <Stack justify="space-between" style={{ height: "100%" }}>
                   <div>
                     <Text color="#fff" weight="bold" size="36px" p="0" m="0">
-                      $1200
+                      ${data?.user?.[0].balance}
                     </Text>
                     <Text color="#fff" weight={500} p="0">
                       Current Balance
@@ -72,19 +90,47 @@ const Dashboard = () => {
             </Grid>
           </Card>
         </Grid.Col>
-        <Grid.Col span={7}>
-          <Card h="250px" withBorder>
+        <Grid.Col span="auto">
+          <Card h="250px" style={{ background: "#f9f9f9" }} p="xl">
             <Grid>
               <Grid.Col span={8}>
-                <div style={{ marginTop: "40px" }}>
+                <div style={{ marginTop: "30px" }}>
                   <img src={abstract} width="40px" />
-                  <Text color="gray.7" weight={500} size="18px" my="10px">
-                    To run a bulk payroll click the button below and create a
-                    new batch
+                  <Text size="30px" weight={600} mt="10px">
+                    $
+                    {data?.payrollsTotal?.[0].totalGrossAmount.toLocaleString(
+                      "en-US",
+                      {
+                        maximumFractionDigits: 2,
+                      }
+                    )}
                   </Text>
-                  <Button color="black" variant="outline">
-                    Run payroll
-                  </Button>
+                  <Text color="dimmed" weight={500} size="16px">
+                    Total Gross Amount spent
+                  </Text>
+                </div>
+              </Grid.Col>
+            </Grid>
+          </Card>
+        </Grid.Col>
+        <Grid.Col span="auto">
+          <Card h="250px" style={{ background: "#f9f9f9" }} p="xl">
+            <Grid>
+              <Grid.Col span={8}>
+                <div style={{ marginTop: "30px" }}>
+                  <img src={abstract2} width="40px" />
+                  <Text size="30px" weight={600} mt="10px">
+                    $
+                    {data?.payrollsTotal?.[0].totalNetAmount.toLocaleString(
+                      "en-US",
+                      {
+                        maximumFractionDigits: 2,
+                      }
+                    )}
+                  </Text>
+                  <Text color="dimmed" weight={500} size="16px">
+                    Total Net Amount spent
+                  </Text>
                 </div>
               </Grid.Col>
             </Grid>
@@ -99,7 +145,7 @@ const Dashboard = () => {
         <Grid mt="10px" align="center">
           <Grid.Col span={3}>
             <Text size="40px" weight={500}>
-              5
+              ${data?.employess?.[0].noOfEmployess}
             </Text>
             <Title order={5} color="dimmed">
               Total Employess
@@ -108,10 +154,10 @@ const Dashboard = () => {
 
           <Grid.Col span={3}>
             <Text size="40px" weight={500}>
-              2
+              ${data?.employess?.[0].noOfEmployess}
             </Text>
             <Title order={5} color="dimmed">
-              Total payrolls
+              Pending payrolls
             </Title>
           </Grid.Col>
 

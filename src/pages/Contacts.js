@@ -10,6 +10,8 @@ import getInitials from "../utils/getInitials";
 import { hash } from "../utils/hash";
 import TableLoader from "../compenents/TableLoader";
 import { useError } from "../hooks/useError";
+import { useMediaQuery } from "@mantine/hooks";
+
 import SendSmS from "../compenents/SendSmS";
 import moment from "moment";
 import {
@@ -191,7 +193,7 @@ const Contacts = () => {
               checked={itemCheckedStatus(item._id)}
             />
             <Avatar
-              color={colors[hash(item.firstName)]}
+              color={colors[hash(`${item.firstName} ${item.lastName}`)]}
               radius="xl"
               variant="filled"
               size="md"
@@ -228,9 +230,6 @@ const Contacts = () => {
 
         <td>
           <Group spacing={0} position="right">
-            <ActionIcon>
-              <IconPencil size={16} stroke={1.5} />
-            </ActionIcon>
             <ActionIcon
               color="red"
               onClick={(e) => {
@@ -244,9 +243,10 @@ const Contacts = () => {
         </td>
       </tr>
     ));
+  const largeScreen = useMediaQuery("(min-width: 1450px)");
 
   return (
-    <Container size="xs" mb="100px" className="page-content">
+    <Container size={largeScreen ? "xl" : "md"} className="page-content">
       <SendSmS opened={sendSmSOpened} setOpened={setSendSmS} />
 
       <Modal
@@ -315,9 +315,8 @@ const Contacts = () => {
                 value={searchQuery.search}
                 data={[
                   { value: "email", label: "Email Address" },
-                  { value: "name", label: "Employee Name" },
-                  { value: "studentId", label: "Student ID" },
-                  { value: "passport", label: "Passport Number" },
+                  { value: "firstName", label: "Employee Name" },
+                  { value: "employeeId", label: "Employee ID" },
                 ]}
                 onChange={(val) => searchBy(val)}
               />

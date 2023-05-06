@@ -15,6 +15,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getPayroll, reset } from "../features/payrolls/payrollSlice";
 import moment from "moment";
+import { useMediaQuery } from "@mantine/hooks";
 
 const colors = {
   "Under Review": "blue",
@@ -41,13 +42,14 @@ const PayrollView = () => {
   const { payroll } = useParams();
   const dispatch = useDispatch();
   const { payroll: data } = useSelector((state) => state.payroll);
+  const largeScreen = useMediaQuery("(min-width: 1450px)");
 
   useEffect(() => {
     dispatch(getPayroll(payroll));
   }, [payroll]);
 
   return (
-    <Container justify="space-between" mb="100px" className="page-content">
+    <Container size={largeScreen ? "xl" : "md"} className="page-content">
       <Grid>
         <Grid.Col span={6}>
           <>
@@ -78,7 +80,7 @@ const PayrollView = () => {
       </Grid>
       <Grid>
         <Grid.Col span={3}>
-          <Card radius="md" shadow="sm">
+          <Card radius="md" withBorder>
             <Text size="20px" weight={500}>
               {data && `$${data.payrollSummary?.grossAmount}`}
             </Text>
@@ -88,7 +90,7 @@ const PayrollView = () => {
           </Card>
         </Grid.Col>
         <Grid.Col span={3}>
-          <Card radius="md" shadow="sm">
+          <Card radius="md" withBorder>
             <Text size="20px" weight={500}>
               {data && `$${data.payrollSummary?.netAmount}`}
             </Text>
@@ -98,7 +100,7 @@ const PayrollView = () => {
           </Card>
         </Grid.Col>
         <Grid.Col span={3}>
-          <Card radius="md" shadow="sm">
+          <Card radius="md" withBorder>
             <Text size="20px" weight={500}>
               {data && data.payroll && data.payroll.length}
             </Text>
@@ -108,7 +110,7 @@ const PayrollView = () => {
           </Card>
         </Grid.Col>
       </Grid>
-      <Card radius="lg" shadow="lg" mt="lg">
+      <Card radius="lg" withBorder mt="lg">
         <Table mt="lg" verticalSpacing="xl">
           <thead className={classes.thead}>
             <tr>

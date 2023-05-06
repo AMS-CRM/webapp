@@ -28,6 +28,7 @@ import {
   IconAlertCircle,
 } from "@tabler/icons";
 import Empty from "../layout/Empty.js";
+import { useMediaQuery } from "@mantine/hooks";
 
 const useStyles = createStyles((theme) => ({
   thead: {
@@ -68,6 +69,7 @@ const Payroll = () => {
 
     return () => dispatch(reset());
   }, [dispatch]);
+  const largeScreen = useMediaQuery("(min-width: 1450px)");
 
   const theme = useMantineTheme();
   const rows =
@@ -128,7 +130,7 @@ const Payroll = () => {
     ));
 
   return (
-    <Container justify="space-between" mb="100px" className="page-content">
+    <Container size={largeScreen ? "xl" : "md"} className="page-content">
       <Grid>
         <Grid.Col span={6}>
           <Title order={3}>Payrolls</Title>

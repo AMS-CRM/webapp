@@ -5,14 +5,13 @@ import {
   Text,
   Group,
   Grid,
-  Table,
-  Title,
-  Paper,
   Button,
-  Tooltip,
-  SimpleGrid,
+  Select,
   Badge,
   Tabs,
+  Input,
+  PasswordInput,
+  TextInput,
 } from "@mantine/core";
 import {
   IconArrowBarRight,
@@ -21,37 +20,103 @@ import {
   IconChevronLeft,
   IconClipboard,
   IconClock,
+  IconCurrencyDollar,
+  IconDownload,
+  IconLock,
+  IconQuestionCircle,
   IconTimeline,
 } from "@tabler/icons";
-import { getContactWithEmail, reset } from "../features/contacts/contactSlice";
-import { useEffect } from "react";
+import {
+  editContact,
+  getContactWithEmail,
+  reset,
+} from "../features/contacts/contactSlice";
+import {
+  getPayStubDownloadLink,
+  reset as payrollReset,
+} from "../features/payrolls/payrollSlice";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 import emptyImg from "../assets/empty.png";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import { useError } from "../hooks/useError";
+import { hash } from "../utils/hash";
+import getInitials from "../utils/getInitials";
+import { useMediaQuery } from "@mantine/hooks";
+
+const colors = ["blue", "red", "orange", "yellow", "green", "teal", "purple"];
 
 const Contact = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { email } = useParams();
+  const [errors, setErrors] = useError("contacts");
   const { contact, isLoading, isError, isSuccess, message } = useSelector(
     (state) => state.contacts
   );
+  const {
+    isLoading: payStubLoading,
+    isSuccess: payStubSuccess,
+    isError: payStubError,
+    message: payStubMessage,
+    paystubURL,
+  } = useSelector((state) => state.payroll);
+  const [salaryFormData, setSalaryFormData] = useState({});
+  const largeScreen = useMediaQuery("(min-width: 1450px)");
+
   useEffect(() => {
     if (email) {
       dispatch(getContactWithEmail(email));
     }
-    return () => dispatch(reset());
+
+    return () => {
+      dispatch(reset());
+      dispatch(payrollReset());
+    };
   }, [email]);
 
+  useEffect(() => {
+    if (!salaryFormData.user && contact.length != 0) {
+      setSalaryFormData({
+        user: contact._id,
+        payroll: {
+          securityAnswer: contact.payroll.securityAnswer,
+          securityQuestion: contact.payroll.securityQuestion,
+        },
+        salary: {
+          wage: contact.salary.wage,
+        },
+      });
+    }
+
+    if (payStubSuccess && paystubURL) {
+      window.location.href = paystubURL;
+
+      dispatch(payrollReset());
+    }
+  }, [contact, payStubSuccess, paystubURL]);
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    setErrors({});
+    dispatch(editContact(salaryFormData));
+  };
   return (
-    isSuccess &&
-    contact && (
-      <Container size="md" className="page-content">
+    contact != "" && (
+      <Container size={largeScreen ? "xl" : "md"} className="page-content">
         <Grid align="center" mb="20px">
           <Grid.Col span={12} spacing="xs">
             <Group>
-              <Avatar size="lg" radius="100%" color="red">
-                SS
+              <Avatar
+                color={colors[hash(`${contact.firstName} ${contact.lastName}`)]}
+                radius="xl"
+                variant="filled"
+                size="md"
+              >
+                <Text>
+                  {getInitials(`${contact.firstName} ${contact.lastName}`)}
+                </Text>
               </Avatar>
               <div>
                 <Text
@@ -79,17 +144,187 @@ const Contact = () => {
           <Tabs.List>
             <Tabs.Tab value="summary">Summary</Tabs.Tab>
             <Tabs.Tab value="payroll">Payroll</Tabs.Tab>
+            <Tabs.Tab value="wages">Wages</Tabs.Tab>
           </Tabs.List>
+
+          <Tabs.Panel value="wages" pt="xs" my="lg">
+            <Grid>
+              <Grid.Col span={5}>
+                <Card style={{ backgroundColor: "#fcfcfc" }} p="xl">
+                  <Text color="gray.7" weight={600}>
+                    Employee Salary
+                  </Text>
+                  <Grid justify="space-between" align="center" mt="10px">
+                    <Grid.Col span={12} mb="20px">
+                      <Select
+                        variant="unstyled"
+                        defaultValue="Hourly"
+                        weight={600}
+                        style={{ padding: "0" }}
+                        className="selectInput"
+                        data={[{ value: "Hourly", label: "Hourly" }]}
+                      />
+                      <Text size="xs" color="dimmed">
+                        Employee wage typ
+                      </Text>
+                    </Grid.Col>
+                    <Grid.Col span={12}>
+                      <Select
+                        variant="unstyled"
+                        defaultValue="Weekly"
+                        className="selectInput"
+                        style={{ padding: "0" }}
+                        data={[
+                          { value: "Weekly", label: "Weekly" },
+                          { value: "Bi-weekly", label: "Bi-weekly" },
+                        ]}
+                      />
+                      <Text size="xs" color="dimmed">
+                        Payroll run cycle
+                      </Text>
+                    </Grid.Col>
+
+                    <Grid.Col span={6} mt="10px">
+                      <Text size="sm" weight={600}>
+                        Wage
+                      </Text>
+                      <Text size="xs" color="dimmed">
+                        Employee hourly salary
+                      </Text>
+                    </Grid.Col>
+                    <Grid.Col span={4}>
+                      <Input.Wrapper>
+                        <TextInput
+                          radius="md"
+                          onChange={(e) =>
+                            setSalaryFormData({
+                              ...salaryFormData,
+                              payroll: {
+                                amount:
+                                  Number(e.target.value) *
+                                    contact.payroll.hours +
+                                  contact.payroll.extraPay,
+                              },
+                              salary: {
+                                wage: e.target.value,
+                              },
+                            })
+                          }
+                          error={errors && errors["salary.wage"]}
+                          value={salaryFormData.salary?.wage}
+                          withBorder={false}
+                          icon={<IconCurrencyDollar size="1rem" />}
+                          variant="filled"
+                        />
+                      </Input.Wrapper>
+                    </Grid.Col>
+                  </Grid>
+                </Card>
+              </Grid.Col>
+
+              <Grid.Col span={7}>
+                <Card style={{ backgroundColor: "#f9f9f9" }} p="xl">
+                  <Text color="gray.7" weight={600}>
+                    Trasfer details
+                  </Text>
+                  <Grid justify="space-between" align="center" mt="10px">
+                    <Grid.Col span={12} mb="20px">
+                      <Select
+                        variant="unstyled"
+                        defaultValue="E-transfer"
+                        weight={600}
+                        style={{ padding: "0" }}
+                        className="selectInput"
+                        data={[{ value: "E-transfer", label: "E-transfer" }]}
+                      />
+                      <Text size="xs" color="dimmed">
+                        Salary transfer type
+                      </Text>
+                    </Grid.Col>
+
+                    <Grid.Col span={6} mt="10px">
+                      <Text size="sm" weight={600}>
+                        Security Question
+                      </Text>
+                      <Text size="xs" color="dimmed">
+                        Security Question for E-Transfer
+                      </Text>
+                    </Grid.Col>
+                    <Grid.Col span={4}>
+                      <Input.Wrapper>
+                        <TextInput
+                          radius="md"
+                          value={salaryFormData?.payroll?.securityQuestion}
+                          onChange={(e) =>
+                            setSalaryFormData({
+                              ...salaryFormData,
+                              payroll: {
+                                securityQuestion: e.target.value,
+                              },
+                            })
+                          }
+                          error={errors && errors["payroll.securityQuestion"]}
+                          withBorder={false}
+                          icon={<IconQuestionCircle size="1rem" />}
+                          variant="filled"
+                        />
+                      </Input.Wrapper>
+                    </Grid.Col>
+                    <Grid.Col span={6} mt="10px">
+                      <Text size="sm" weight={600}>
+                        Security Answer
+                      </Text>
+                      <Text size="xs" color="dimmed">
+                        Security answer for E-Transfer
+                      </Text>
+                    </Grid.Col>
+                    <Grid.Col span={4}>
+                      <Input.Wrapper>
+                        <PasswordInput
+                          radius="md"
+                          withBorder={false}
+                          value={salaryFormData?.payroll?.securityAnswer}
+                          onChange={(e) =>
+                            setSalaryFormData({
+                              ...salaryFormData,
+                              payroll: {
+                                securityAnswer: e.target.value,
+                              },
+                            })
+                          }
+                          error={errors && errors["payroll.securityAnswer"]}
+                          icon={<IconLock size="1rem" />}
+                          variant="filled"
+                        />
+                      </Input.Wrapper>
+                    </Grid.Col>
+                  </Grid>
+                </Card>
+              </Grid.Col>
+            </Grid>
+            <Grid>
+              <Grid.Col span={12} mt="20px">
+                <Button
+                  variant="outline"
+                  style={{ float: "right" }}
+                  onClick={(e) => handleFormSubmit(e)}
+                  loading={isLoading}
+                >
+                  Save changes
+                </Button>
+              </Grid.Col>
+            </Grid>
+          </Tabs.Panel>
 
           <Tabs.Panel value="summary" pt="xs" my="lg">
             <Grid>
-              <Grid.Col span={5}>
+              <Grid.Col span={largeScreen ? 4 : 5}>
                 <Card radius="md" withBorder>
                   <Text my="10px" weight={400}>
                     Total Earnings
                   </Text>
 
-                  <Grid justify="space-between" align="">
+                  <Grid justify="space-between">
                     <div>
                       <Text weight={600} size="30px">
                         <Text
@@ -186,8 +421,8 @@ const Contact = () => {
                   </Card>
                 </Card>
               </Grid.Col>
-              <Grid.Col span={7}>
-                <Card radius="md" withBorder>
+              <Grid.Col span="auto">
+                <Card radius="md" withBorder p="xl">
                   <Text my="10px" weight={400}>
                     Payroll History
                   </Text>
@@ -199,10 +434,10 @@ const Contact = () => {
                           radius="md"
                           mb="10px"
                         >
-                          <Grid justify="space-between">
+                          <Grid justify="space-between" align="center" p="10px">
                             <Grid.Col span={4}>
                               <Text weight="500" size="sm">
-                                Payroll{" "}
+                                Payroll
                                 {moment(payroll.createdOn).format(
                                   "DD MMMM, YYYY"
                                 )}
@@ -210,10 +445,36 @@ const Contact = () => {
                               <Text color="dimmed" size="xs">
                                 Weekly Regular
                               </Text>
+                              <Button
+                                mt="10px"
+                                size="sm"
+                                mr="8px"
+                                disabled={!payroll.payroll.payStub && true}
+                                loading={payStubLoading}
+                                onClick={() => {
+                                  dispatch(
+                                    getPayStubDownloadLink({
+                                      userId: contact._id,
+                                      payrollId: payroll._id,
+                                    })
+                                  );
+                                }}
+                              >
+                                <Text>Paystub</Text>
+                                <IconDownload size="1rem" />
+                              </Button>
+                              <Link to={`/payrolls/${payroll.payrollNo}`}>
+                                <Button mt="10px" size="sm" variant="outline">
+                                  View Payroll
+                                </Button>
+                              </Link>
                             </Grid.Col>
                             <Grid.Col span={4}>
-                              <Text align="right">
+                              <Text align="right" size="24px" weight={600}>
                                 ${payroll.payroll.data.amount}
+                                <Text color="dimmed" size="sm">
+                                  Gross amount
+                                </Text>
                               </Text>
                             </Grid.Col>
                           </Grid>

@@ -8,11 +8,28 @@ const initialState = {
   message: "",
   list: [],
   payroll: {},
+  paystubURL: "",
   payrollRun: {
     totalAmount: 0,
     users: [],
   },
 };
+
+// Get the download link for paystub
+export const getPayStubDownloadLink = createAsyncThunk(
+  "payroll/getPayStubDownloadLink",
+  async (data, thunkAPI) => {
+    try {
+      return payrollService.paystubDownloadLink(data);
+    } catch (error) {
+      const message =
+        (error.response && error.reponse.data && error.response.data.error) ||
+        error.message ||
+        error.toString();
+      thunkAPI.rejectWithValue(message);
+    }
+  }
+);
 
 // Get the data of an individual payrolld
 export const getPayroll = createAsyncThunk(
@@ -154,6 +171,21 @@ const payrollSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(approvePayroll.rejected, (state, action) => {
+        state.isError = true;
+        state.isLoading = false;
+        state.isSuccess = false;
+        state.message = action.payload;
+      })
+      .addCase(getPayStubDownloadLink.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getPayStubDownloadLink.fulfilled, (state, action) => {
+        state.isError = false;
+        state.isSuccess = true;
+        state.isLoading = false;
+        state.paystubURL = action.payload;
+      })
+      .addCase(getPayStubDownloadLink.rejected, (state, action) => {
         state.isError = true;
         state.isLoading = false;
         state.isSuccess = false;

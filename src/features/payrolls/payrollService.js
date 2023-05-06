@@ -2,6 +2,13 @@ import axiosDefault from "../../utils/axios";
 
 const PAYROLL = "/payroll";
 const PAYROLL_APPROVE = "/payroll/approve";
+const PAYSTUB = "/payroll/PAYSTUB";
+
+// Download link for paystub
+const paystubDownloadLink = async (data) => {
+  const response = await axiosDefault.post(PAYSTUB, data);
+  return response.data.data.url;
+};
 
 // Approve a payroll
 const approvePayroll = async (data) => {
@@ -32,4 +39,5 @@ export default {
   listPayroll,
   getPayroll,
   approvePayroll,
+  paystubDownloadLink,
 };

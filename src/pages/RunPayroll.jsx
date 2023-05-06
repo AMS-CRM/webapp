@@ -17,6 +17,7 @@ import {
   payrollCreate,
   reset as payrollReset,
 } from "../features/payrolls/payrollSlice";
+import { useMediaQuery } from "@mantine/hooks";
 
 import {
   Avatar,
@@ -42,6 +43,7 @@ import {
   Select,
   Checkbox,
   Menu,
+  TextInput,
 } from "@mantine/core";
 import {
   IconSearch,
@@ -49,6 +51,8 @@ import {
   IconCloudSnow,
   IconDeviceFloppy,
   IconCircleX,
+  IconClock,
+  IconCurrencyDollar,
 } from "@tabler/icons";
 import Empty from "../layout/Empty.js";
 
@@ -79,6 +83,7 @@ const RunPayroll = () => {
     isError,
     message,
   } = useSelector((state) => state.contacts);
+
   const {
     isLoading: payrollLoading,
     isSuccess: payrollSuccess,
@@ -88,6 +93,8 @@ const RunPayroll = () => {
   } = useSelector((state) => state.payroll);
   const [pages, setPages] = useState(0);
   const [activePage, setActivePage] = useState(parseInt(page) || 1);
+  const [error, setError] = useError("contacts");
+  const [currentInput, setCurrentInput] = useState("");
   const [searchQuery, setSearchQuery] = useState({
     keyword: "",
     search: "email",
@@ -102,6 +109,7 @@ const RunPayroll = () => {
   const [saveStatus, setSavedStatus] = useState(true);
   const [errors, setErrors] = useState([]);
   const rows = useRef({});
+  const largeScreen = useMediaQuery("(min-width: 1450px)");
 
   useMemo(() => {
     dispatch(getContacts({ page }));
@@ -197,20 +205,18 @@ const RunPayroll = () => {
     return false;
   };
 
-  const onInputChange = (e, user) => {
+  const onInputChange = (e, user, grossAmount, type = "payroll") => {
+    setError();
     // Compose the data for the
     dispatch(
       editContact({
         user,
-        payroll: {
+        [type]: {
           [e.target.name]: e.target.value,
+          amount: grossAmount,
         },
       })
     );
-  };
-
-  const openContact = (id) => {
-    navigate(`/contact/${id}`);
   };
 
   const handleRunPayroll = () => {
@@ -219,25 +225,19 @@ const RunPayroll = () => {
     setErrors([]);
   };
 
-  const theme = useMantineTheme();
-
   const sheet =
     data &&
     data.contacts.length > 0 &&
     data.contacts.map((item) => (
       <Card
-        radius="sm"
+        radius="md"
         mb="20px"
         py="xl"
         style={{
-          background: "#fcfcfc",
+          background: "#f9f9f9",
         }}
       >
-        <Grid
-          key={item._id}
-          onClick={() => openContact(item._id)}
-          align="center"
-        >
+        <Grid key={item._id} align="center">
           <Grid.Col span={4}>
             <Grid align="center" justifyContent="" gutter="xs">
               <Grid.Col span={1}>
@@ -252,7 +252,7 @@ const RunPayroll = () => {
                   checked={itemCheckedStatus(item._id)}
                 />
               </Grid.Col>
-              <Grid.Col span={1} mr="15px">
+              <Grid.Col span={1} mr="20px">
                 <Avatar
                   color={colors[hash(item.firstName)]}
                   radius="xl"
@@ -274,87 +274,125 @@ const RunPayroll = () => {
           </Grid.Col>
 
           <Grid.Col span={2}>
-            <Text mb="sm" size="sm">
-              Pay Cycle
-            </Text>
             <Select
+              className="selectInput"
               placeholder="Weekly"
               defaultValue={52}
+              variant="unstyled"
               onClick={(e) => e.stopPropagation()}
               style={{ width: "120px" }}
               data={[{ value: 52, label: "Weekly" }]}
             />
+            <Text mb="sm" size="xs" color="dimmed">
+              Pay Cycle
+            </Text>
           </Grid.Col>
           <Grid.Col span={2}>
-            <Text mb="sm" size="sm">
-              Security Question
-            </Text>
             <Input.Wrapper
               style={{ width: "120px" }}
               onClick={(e) => e.stopPropagation()}
             >
-              <Input
-                placeholder="Security Questions"
-                name="securityQuestion"
+              <TextInput
+                name="hours"
                 size="sm"
+                withBorder
                 radius="sm"
-                onChange={() => setSavedStatus(false)}
-                ref={(el) =>
-                  (rows.current[`${item._id}_securityQuestion`] = el)
+                variant="unstyled"
+                weight={600}
+                icon={<IconClock size="1rem" />}
+                onChange={(e) => {
+                  const grossAmount =
+                    Number(
+                      rows.current[`${item._id}_hours`].value * item.salary.wage
+                    ) + Number(rows.current[`${item._id}_extraPay`].value);
+                  rows.current[`${item._id}_amount`].value = grossAmount;
+                  setSavedStatus(false);
+                  setCurrentInput(`${item._id}_hours`);
+                }}
+                mt="5px"
+                ref={(el) => (rows.current[`${item._id}_hours`] = el)}
+                defaultValue={item.payroll.hours}
+                error={
+                  error &&
+                  error["payroll.hours"] &&
+                  currentInput == `${item._id}_hours`
                 }
-                defaultValue={item.payroll.securityQuestion}
-                onBlur={(e) => onInputChange(e, item._id)}
+                onBlur={(e) =>
+                  onInputChange(
+                    e,
+                    item._id,
+                    rows.current[`${item._id}_amount`].value
+                  )
+                }
               />
             </Input.Wrapper>
+            <Text mb="sm" size="xs" color="dimmed" mt="5px">
+              Work Hours
+            </Text>
           </Grid.Col>
           <Grid.Col span={2}>
-            <Text mb="sm" size="sm">
-              Security Answer
-            </Text>
-
             <Input.Wrapper
               style={{ width: "100px" }}
               onClick={(e) => e.stopPropagation()}
             >
-              <PasswordInput
-                placeholder="Last Name"
-                name="securityAnswer"
+              <TextInput
+                name="extraPay"
                 size="sm"
-                onChange={() => setSavedStatus(false)}
+                onChange={() => {
+                  rows.current[`${item._id}_amount`].value =
+                    Number(
+                      rows.current[`${item._id}_hours`].value * item.salary.wage
+                    ) + Number(rows.current[`${item._id}_extraPay`].value);
+                  setSavedStatus(false);
+                  setCurrentInput(`${item._id}_extraPay`);
+                }}
                 radius="sm"
-                onBlur={(e) => onInputChange(e, item._id)}
-                ref={(el) => (rows.current[`${item._id}_securityAnswer`] = el)}
-                defaultValue={item.payroll.securityAnswer}
+                variant="unstyled"
+                icon={<IconCurrencyDollar size="1rem" />}
+                error={
+                  error &&
+                  error["payroll.extraPay"] &&
+                  currentInput == `${item._id}_extraPay`
+                }
+                onBlur={(e) =>
+                  onInputChange(
+                    e,
+                    item._id,
+                    rows.current[`${item._id}_amount`].value
+                  )
+                }
+                ref={(el) => (rows.current[`${item._id}_extraPay`] = el)}
+                defaultValue={item.payroll.extraPay}
               />
             </Input.Wrapper>
+            <Text mb="sm" size="xs" color="dimmed" mt="5px">
+              Vaction pay
+            </Text>
           </Grid.Col>
           <Grid.Col span={2}>
-            <Text mb="sm" size="sm">
-              Amount
-            </Text>
-
-            <Input.Wrapper
-              style={{ width: "100px" }}
-              onClick={(e) => e.stopPropagation(e, item._id)}
-            >
+            <Input.Wrapper style={{ width: "100px" }}>
               <Input
-                placeholder="amount"
                 name="amount"
                 size="sm"
                 radius="sm"
-                onChange={() => setSavedStatus(false)}
-                onBlur={(e) => onInputChange(e, item._id)}
+                variant="unstyled"
+                icon={<IconCurrencyDollar size="1rem" />}
+                className="inputBold"
                 ref={(el) => (rows.current[`${item._id}_amount`] = el)}
                 defaultValue={item.payroll.amount}
+                disabled
               />
             </Input.Wrapper>
+            <Text mb="sm" size="xs" color="dimmed" mt="5px">
+              Gross Amount
+            </Text>
           </Grid.Col>
         </Grid>
       </Card>
     ));
 
   return (
-    <Container size="xl" mb="100px" className="page-content">
+    <Container size={largeScreen ? "xl" : "md"} className="page-content">
       <Modal
         opened={payrollModal}
         onClose={() => {

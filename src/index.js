@@ -20,6 +20,19 @@ root.render(
           defaultRadius: 4,
           primaryShade: 6,
           fontFamily: "Poppins",
+          components: {
+            Container: {
+              defaultProps: {
+                sizes: {
+                  xs: 540,
+                  sm: 720,
+                  md: 1016,
+                  lg: 1140,
+                  xl: 1488,
+                },
+              },
+            },
+          },
         }}
       >
         <NotificationsProvider>
