@@ -21,7 +21,7 @@ const useStyle = createStyles((theme) => ({
   },
 }));
 
-const Empty = ({ title, description, icon }) => {
+const Empty = ({ title, description, icon, formStatus, setFormStatus }) => {
   const { classes, theme } = useStyle();
 
   return (
@@ -45,7 +45,7 @@ const Empty = ({ title, description, icon }) => {
         <Text color="dimmed" align="center" m="auto">
           {description}
         </Text>
-        <Button m="auto" mt="10px">
+        <Button m="auto" mt="10px" onClick={() => setFormStatus(true)}>
           + New
         </Button>
       </Group>

@@ -12,7 +12,7 @@ import {
 import { IconCirclePlus, IconLogout, IconPlus } from "@tabler/icons";
 import { useDispatch } from "react-redux";
 import { logout, reset } from "../features/auth/authSlice";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const collections = [
   { emoji: "👍", label: "Whatsapp" },
@@ -130,6 +130,7 @@ const useStyles = createStyles((theme, _params, getRef) => {
 const SideBar = ({ data, toggleOpened, toggleOpenedStatus }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   const onLogout = () => {
     dispatch(logout());
@@ -138,7 +139,7 @@ const SideBar = ({ data, toggleOpened, toggleOpenedStatus }) => {
   };
 
   const { classes, cx } = useStyles();
-  const [active, setActive] = useState("Billing");
+  const [active, setActive] = useState(pathname);
 
   const collectionLinks = collections.map((collection) => (
     <a
@@ -156,14 +157,14 @@ const SideBar = ({ data, toggleOpened, toggleOpenedStatus }) => {
     <a
       mb="20px"
       className={cx(classes.link, {
-        [classes.linkActive]: item.label === active,
+        [classes.linkActive]: item.link === active,
       })}
       href={item.link}
       key={item.label}
       onClick={(event) => {
         event.preventDefault();
         navigate(item.link);
-        setActive(item.label);
+        setActive(item.link);
       }}
     >
       <item.icon className={classes.linkIcon} stroke={1.5} size="22" />

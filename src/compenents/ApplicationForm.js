@@ -1,35 +1,42 @@
-import { Drawer, useMantineTheme, createStyles, Container } from '@mantine/core';
+import {
+  Drawer,
+  useMantineTheme,
+  createStyles,
+  Container,
+} from "@mantine/core";
 import CreateContact from "./CreateContact";
 
 const useStyles = createStyles((theme) => ({
-    drawer: {
-        overflowY: "scroll"
-    }
-}))
+  drawer: {
+    overflowY: "scroll",
+  },
+}));
 
-const ApplicationForm = ({onClose, opened}) => {
+const ApplicationForm = ({ onClose, opened }) => {
+  const theme = useMantineTheme();
+  const { classes } = useStyles();
 
-
-    const theme = useMantineTheme();
-    const { classes } = useStyles();
-
-    return (
-        <Drawer
-            overlayColor={theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[2]}
-            overlayOpacity={0.55}
-            overlayBlur={3}
-            opened={opened}
-            size="xl"
-            padding="xl"
-            position='right'
-            onClose={()=>onClose(false)}
-            className={classes.drawer}
-        >
-        <Container >
-           <CreateContact onClose={onClose} />
-        </Container>
-      </Drawer>
-    )
-}
+  return (
+    <Drawer
+      overlayColor={
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[9]
+          : theme.colors.gray[2]
+      }
+      overlayOpacity={0.55}
+      overlayBlur={3}
+      opened={opened}
+      size="40%"
+      padding="xl"
+      position="right"
+      onClose={() => onClose(false)}
+      className={classes.drawer}
+    >
+      <Container size="xs">
+        <CreateContact onClose={onClose} />
+      </Container>
+    </Drawer>
+  );
+};
 
 export default ApplicationForm;

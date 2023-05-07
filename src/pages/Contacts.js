@@ -5,7 +5,7 @@ import {
   reset,
 } from "../features/contacts/contactSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useOutletContext } from "react-router-dom";
 import getInitials from "../utils/getInitials";
 import { hash } from "../utils/hash";
 import TableLoader from "../compenents/TableLoader";
@@ -70,6 +70,8 @@ const colors = ["blue", "red", "orange", "yellow", "green", "teal", "purple"];
 
 const Contacts = () => {
   const dispatch = useDispatch();
+  const { formStatus, setFormStatus } = useOutletContext();
+
   const { page } = useParams();
   const navigate = useNavigate();
   const { classes, cx } = useStyles();
@@ -213,7 +215,7 @@ const Contacts = () => {
           </Group>
         </td>
 
-        <td>{item.passport}</td>
+        <td>{item.employeeId}</td>
         <td>
           <Badge color="green">Active</Badge>
         </td>
@@ -341,9 +343,11 @@ const Contacts = () => {
 
       {isError && !data ? (
         <Empty
-          title="Create manage and delete contacts"
-          description="Creating availability schedules allows you to manage availability across event types. They can be applied to one or more event types.              "
+          title="Create and manage employees"
+          description="Onboarding employess to run payroll cycle and manage their salary. If you see this message click the button below to onboard your first employee."
           icon={<IconClipboardList size="40" />}
+          formStatus={formStatus}
+          setFormStatus={setFormStatus}
         />
       ) : !isLoading ? (
         <>

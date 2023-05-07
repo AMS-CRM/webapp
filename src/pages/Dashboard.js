@@ -98,12 +98,12 @@ const Dashboard = () => {
                   <img src={abstract} width="40px" />
                   <Text size="30px" weight={600} mt="10px">
                     $
-                    {data?.payrollsTotal?.[0].totalGrossAmount.toLocaleString(
+                    {data?.payrollsTotal?.[0]?.totalGrossAmount.toLocaleString(
                       "en-US",
                       {
                         maximumFractionDigits: 2,
                       }
-                    )}
+                    ) || 0}
                   </Text>
                   <Text color="dimmed" weight={500} size="16px">
                     Total Gross Amount spent
@@ -121,12 +121,12 @@ const Dashboard = () => {
                   <img src={abstract2} width="40px" />
                   <Text size="30px" weight={600} mt="10px">
                     $
-                    {data?.payrollsTotal?.[0].totalNetAmount.toLocaleString(
+                    {data?.payrollsTotal?.[0]?.totalNetAmount.toLocaleString(
                       "en-US",
                       {
                         maximumFractionDigits: 2,
                       }
-                    )}
+                    ) || 0}
                   </Text>
                   <Text color="dimmed" weight={500} size="16px">
                     Total Net Amount spent
@@ -137,15 +137,15 @@ const Dashboard = () => {
           </Card>
         </Grid.Col>
       </Grid>
-      <Paper withBorder p="lg" mt="30px">
-        <Title order={3}>Totals</Title>
+      <Paper withBorder p="lg" my="30px">
+        <Title order={3}>Overview</Title>
         <Text size="sm" color="dimmed">
-          Complete overview of your appilcation portal
+          Complete overview of your payrolls
         </Text>
         <Grid mt="10px" align="center">
           <Grid.Col span={3}>
             <Text size="40px" weight={500}>
-              ${data?.employess?.[0].noOfEmployess}
+              {data?.employess?.[0].noOfEmployess}
             </Text>
             <Title order={5} color="dimmed">
               Total Employess
@@ -154,7 +154,10 @@ const Dashboard = () => {
 
           <Grid.Col span={3}>
             <Text size="40px" weight={500}>
-              ${data?.employess?.[0].noOfEmployess}
+              {(data?.payrollsStatus &&
+                data.payrollsStatus.filter((x) => x._id == "Pending")[0]
+                  ?.count) ||
+                0}
             </Text>
             <Title order={5} color="dimmed">
               Pending payrolls
@@ -163,7 +166,10 @@ const Dashboard = () => {
 
           <Grid.Col span={3}>
             <Text size="40px" weight={500}>
-              1
+              {(data?.payrollsStatus &&
+                data.payrollsStatus.filter((x) => x._id == "Under Review")[0]
+                  ?.count) ||
+                0}
             </Text>
             <Title order={5} color="dimmed">
               Pending approval
@@ -172,7 +178,10 @@ const Dashboard = () => {
 
           <Grid.Col span={3}>
             <Text size="40px" weight={500}>
-              0
+              {(data?.payrollsStatus &&
+                data.payrollsStatus.filter((x) => x._id == "Processing")[0]
+                  ?.count) ||
+                0}
             </Text>
             <Title order={5} color="dimmed">
               Currently processing

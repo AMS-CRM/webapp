@@ -105,7 +105,7 @@ const CreateContact = ({ onClose }) => {
         Create Employee
       </Title>
       <Title order={5} mb="30px" weight="400">
-        Create a user applicant's profile using passport data.
+        Create a new employee
       </Title>
 
       <form onSubmit={onSubmit}>
@@ -123,6 +123,7 @@ const CreateContact = ({ onClose }) => {
                 size="md"
                 radius="md"
                 onChange={onChange}
+                variant="filled"
                 value={formData.firstName}
               />
             </Input.Wrapper>
@@ -140,6 +141,7 @@ const CreateContact = ({ onClose }) => {
                 size="md"
                 radius="md"
                 onChange={onChange}
+                variant="filled"
                 value={formData.lastName}
               />
             </Input.Wrapper>
@@ -157,6 +159,7 @@ const CreateContact = ({ onClose }) => {
                 size="md"
                 radius="md"
                 name="middleName"
+                variant="filled"
                 onChange={onChange}
                 value={formData.middleName}
               />
@@ -174,6 +177,7 @@ const CreateContact = ({ onClose }) => {
                 placeholder="Email"
                 size="md"
                 radius="md"
+                variant="filled"
                 name="email"
                 onChange={onChange}
                 value={formData.email}
@@ -190,6 +194,7 @@ const CreateContact = ({ onClose }) => {
               error={errors && errors.dob && errors.dob}
               radius="md"
               withAsterisk
+              variant="filled"
               value={formData.dob}
               onChange={(value) => setFormData({ ...formData, dob: value })}
             />
@@ -197,18 +202,19 @@ const CreateContact = ({ onClose }) => {
 
           <Grid.Col span={12}>
             <Input.Wrapper
-              label="Passport Number"
+              label="Employee Number"
               size="xs"
-              error={errors && errors.passport && errors.passport}
+              error={errors && errors.employeeId && errors.employeeId}
               required
             >
               <Input
-                placeholder="Passport"
+                placeholder="Employee No"
                 size="md"
+                variant="filled"
                 radius="md"
-                name="passport"
+                name="employeeId"
                 onChange={onChange}
-                value={formData.passport}
+                value={formData.employeeId}
                 icon={<IconEPassport size={18} />}
               />
             </Input.Wrapper>
@@ -238,6 +244,7 @@ const CreateContact = ({ onClose }) => {
               }
               dropdownPosition="bottom"
               maxDropdownHeight={200}
+              variant="filled"
               nothingFound="No Countries found"
               searchable
               filter={(value, item) =>
@@ -258,6 +265,7 @@ const CreateContact = ({ onClose }) => {
                 placeholder="Address"
                 size="md"
                 radius="md"
+                variant="filled"
                 name="address"
                 onChange={onChange}
                 value={formData.address}
@@ -277,6 +285,7 @@ const CreateContact = ({ onClose }) => {
                 size="md"
                 radius="md"
                 name="state"
+                variant="filled"
                 onChange={onChange}
                 value={formData.provience}
               />
@@ -296,6 +305,7 @@ const CreateContact = ({ onClose }) => {
                 radius="md"
                 onChange={onChange}
                 name="city"
+                variant="filled"
                 value={formData.city}
               />
             </Input.Wrapper>
@@ -312,6 +322,7 @@ const CreateContact = ({ onClose }) => {
                 placeholder="City"
                 size="md"
                 radius="md"
+                variant="filled"
                 name="postalCode"
                 onChange={onChange}
                 value={formData.postalCode}

@@ -3,17 +3,11 @@ import { Outlet, Navigate } from "react-router-dom";
 import HeaderTabs from "./Header";
 import SideBar from "./SideBar";
 
-import appIcon from "../assets/icons/applications.png";
-import programsIcon from "../assets/icons/programs.png";
-import usersIcon from "../assets/icons/users.png";
-import documentsIcon from "../assets/icons/documents.png";
 import ApplicationForm from "./ApplicationForm";
 
 import {
-  IconBroadcast,
   IconUser,
   IconCash,
-  IconLayoutList,
   IconLayoutDashboard,
   IconRefresh,
 } from "@tabler/icons";
@@ -25,17 +19,17 @@ const links = [
     icon: IconLayoutDashboard,
   },
   {
-    link: "/Contacts",
+    link: "/contacts",
     label: "Employees",
     icon: IconUser,
   },
   {
-    link: "/Payrolls",
+    link: "/payrolls",
     label: "Payrolls",
     icon: IconCash,
   },
   {
-    link: "/Payrolls/run",
+    link: "/payrolls/run",
     label: "Run payrolls",
     icon: IconRefresh,
   },
@@ -63,7 +57,7 @@ const ProtectedRoute = ({ children }) => {
       />
 
       <ApplicationForm onClose={setFormStatus} opened={formStatus} />
-      <Outlet />
+      <Outlet context={{ formStatus, setFormStatus }} />
     </>
   );
 };

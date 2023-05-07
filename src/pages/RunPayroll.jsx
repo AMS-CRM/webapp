@@ -5,7 +5,7 @@ import {
   reset,
 } from "../features/contacts/contactSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import getInitials from "../utils/getInitials";
 import { hash } from "../utils/hash";
 import TableLoader from "../compenents/TableLoader";
@@ -110,8 +110,9 @@ const RunPayroll = () => {
   const [errors, setErrors] = useState([]);
   const rows = useRef({});
   const largeScreen = useMediaQuery("(min-width: 1450px)");
+  const { formStatus, setFormStatus } = useOutletContext();
 
-  useMemo(() => {
+  useEffect(() => {
     dispatch(getContacts({ page }));
   }, []);
 
@@ -305,6 +306,7 @@ const RunPayroll = () => {
                     Number(
                       rows.current[`${item._id}_hours`].value * item.salary.wage
                     ) + Number(rows.current[`${item._id}_extraPay`].value);
+
                   rows.current[`${item._id}_amount`].value = grossAmount;
                   setSavedStatus(false);
                   setCurrentInput(`${item._id}_hours`);
@@ -370,7 +372,8 @@ const RunPayroll = () => {
             </Text>
           </Grid.Col>
           <Grid.Col span={2}>
-            <Input.Wrapper style={{ width: "100px" }}>
+            {console.log(item.payroll.amount)}
+            <Input.Wrapper style={{ width: "100px" }} key={item.payroll.amount}>
               <Input
                 name="amount"
                 size="sm"
@@ -590,26 +593,16 @@ const RunPayroll = () => {
 
       {isError && !data ? (
         <Empty
-          title="Create manage and delete contacts"
-          description="Creating availability schedules allows you to manage availability across event types. They can be applied to one or more event types.              "
+          title="Onboard and manage employees"
+          description="Onboarding employess to run payroll cycle and manage their salary. If you see this message click the button below to onboard your first employee."
           icon={<IconClipboardList size="40" />}
+          formStatus={formStatus}
+          setFormStatus={setFormStatus}
         />
-      ) : !false ? (
+      ) : true ? (
         <>
           <ScrollArea>
             <>
-              {/* <thead className={classes.thead}>
-                  <tr>
-                    <th>Employee Name</th>
-                    <th>Employee N</th>
-                    <th>Email</th>
-                    <th>Payroll cycle</th>
-                    <th>Security question</th>
-                    <th>Security Answer</th>
-                    <th>Amount</th>
-                    <th />
-                  </tr>
-      </thead>*/}
               <tbody>{sheet}</tbody>
             </>
           </ScrollArea>

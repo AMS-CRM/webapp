@@ -86,8 +86,8 @@ export const getContacts = createAsyncThunk(
     } catch (error) {
       const message =
         (error.response && error.response.data && error.response.data.error) ||
-        error.response.data.message;
-      error.message || error.toString();
+        error.message ||
+        error.toString();
       return thunkAPI.rejectWithValue(message);
     }
   }
@@ -98,7 +98,7 @@ const contactSlice = createSlice({
   initialState: initialState,
   reducers: {
     reset: (state) => {
-      return { ...initialState, contacts: { ...state.contacts } };
+      return { ...initialState, contacts: state.contacts };
     },
   },
   extraReducers: (builder) => {
@@ -115,7 +115,7 @@ const contactSlice = createSlice({
       .addCase(getContacts.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
-        state.message = action.payload;
+        state.contacts = [];
       })
       .addCase(createContact.pending, (state) => {
         state.isLoading = true;
@@ -130,6 +130,7 @@ const contactSlice = createSlice({
         state.isLoading = false;
         state.isError = true;
         state.isSuccess = false;
+        state.contact = [];
         state.message = action.payload;
       })
       .addCase(deleteContact.pending, (state) => {
