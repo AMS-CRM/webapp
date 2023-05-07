@@ -274,10 +274,11 @@ const Contacts = () => {
           <IconAlertCircle />
         </Avatar>
         <Group mb="10px">
-          <Title order={2}>Delete contact</Title>
+          <Title order={2}>Terminal Employee</Title>
           <Text size="sm" color="dimmed">
-            Are you sure you want to delete this event type? Anyone who you've
-            shared this link with will no longer be able to book using it.
+            Are you sure you want to terminate an employee? You won't be able to
+            run the payroll for this employee. Payroll currently process will
+            remain unchanged.
           </Text>
         </Group>
         <Group position="right">

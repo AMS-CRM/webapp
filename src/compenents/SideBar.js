@@ -141,6 +141,10 @@ const SideBar = ({ data, toggleOpened, toggleOpenedStatus }) => {
   const { classes, cx } = useStyles();
   const [active, setActive] = useState(pathname);
 
+  useEffect(() => {
+    setActive(pathname);
+  }, [pathname]);
+
   const collectionLinks = collections.map((collection) => (
     <a
       href="/"

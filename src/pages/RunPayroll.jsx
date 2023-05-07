@@ -501,7 +501,7 @@ const RunPayroll = () => {
           float="right"
           onClick={() => {
             dispatch(approvePayroll({ payroll: payrollRunData.payroll }));
-            navigate("/Payrolls");
+            navigate("/payrolls", { replace: true });
           }}
           loading={payrollLoading}
           mr="sm"
