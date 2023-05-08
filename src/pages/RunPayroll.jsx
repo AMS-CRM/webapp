@@ -150,7 +150,7 @@ const RunPayroll = () => {
       dispatch(reset());
     };
   }, [data, isSuccess, isLoading, payrollSuccess, payrollError, dispatch]);
-
+  console.log("errors", errors);
   const setPage = (page) => {
     dispatch(getContacts({ page }));
     navigate(`/Payrolls/run/${page}`);
@@ -282,7 +282,14 @@ const RunPayroll = () => {
               variant="unstyled"
               onClick={(e) => e.stopPropagation()}
               style={{ width: "120px" }}
-              data={[{ value: 52, label: "Weekly" }]}
+              data={[
+                { value: 240, label: "Daily" },
+                { value: 52, label: "Weekly" },
+                { value: 26, label: "Bi-Weekly" },
+                { value: 24, label: "Semi-Monthly" },
+                { value: 12, label: "Monthly" },
+                { value: 1, label: "Annual" },
+              ]}
             />
             <Text mb="sm" size="xs" color="dimmed">
               Pay Cycle
@@ -461,7 +468,7 @@ const RunPayroll = () => {
             </Table>
           </>
         )}
-        {errors.length != 0 && errors.payroll && (
+        {errors.length != 0 && (
           <Table
             mb="lg"
             verticalSpacing="md"
@@ -505,6 +512,7 @@ const RunPayroll = () => {
           }}
           loading={payrollLoading}
           mr="sm"
+          disabled={errors.length != 0}
         >
           Approve
         </Button>

@@ -6,11 +6,12 @@ import {
   Button,
   Group,
   Avatar,
+  NumberInput,
   Text,
   Select,
 } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
-import { IconEPassport, IconAt } from "@tabler/icons";
+import { IconEPassport, IconAt, IconCurrencyDollar } from "@tabler/icons";
 import countryFlagEmoji from "country-flag-emoji";
 import PhoneInput from "./PhoneInput";
 import { useDispatch, useSelector } from "react-redux";
@@ -90,8 +91,8 @@ const CreateContact = ({ onClose }) => {
       <Group noWrap>
         <Text size="lg">{flag}</Text>
         <div>
-          <Text size="sm">{name}</Text>
-          <Text size="xs" opacity={0.65}>
+          <Text size="md">{name}</Text>
+          <Text size="md" opacity={0.65}>
             Country Code: {code}
           </Text>
         </div>
@@ -105,7 +106,7 @@ const CreateContact = ({ onClose }) => {
         Create Employee
       </Title>
       <Title order={5} mb="30px" weight="400">
-        Create a new employee
+        Create
       </Title>
 
       <form onSubmit={onSubmit}>
@@ -113,7 +114,7 @@ const CreateContact = ({ onClose }) => {
           <Grid.Col span={6} justify="center">
             <Input.Wrapper
               label="First Name"
-              size="xs"
+              size="md"
               error={errors && errors.firstName && errors.firstName}
               required
             >
@@ -132,7 +133,7 @@ const CreateContact = ({ onClose }) => {
             <Input.Wrapper
               label="Last Name"
               error={errors && errors.lastName && errors.lastName}
-              size="xs"
+              size="md"
               required
             >
               <Input
@@ -149,8 +150,7 @@ const CreateContact = ({ onClose }) => {
 
           <Grid.Col span={12}>
             <Input.Wrapper
-              size="sm"
-              size="xs"
+              size="md"
               error={errors && errors.middleName && errors.middleName}
               label="Middle Name"
             >
@@ -169,7 +169,7 @@ const CreateContact = ({ onClose }) => {
           <Grid.Col span={12}>
             <Input.Wrapper
               label="Email"
-              size="xs"
+              size="md"
               error={errors && errors.email && errors.email}
               required
             >
@@ -202,13 +202,13 @@ const CreateContact = ({ onClose }) => {
 
           <Grid.Col span={12}>
             <Input.Wrapper
-              label="Employee Number"
-              size="xs"
+              label="Employee No"
+              size="md"
               error={errors && errors.employeeId && errors.employeeId}
               required
             >
               <Input
-                placeholder="Employee No"
+                placeholder="Passport"
                 size="md"
                 variant="filled"
                 radius="md"
@@ -216,6 +216,32 @@ const CreateContact = ({ onClose }) => {
                 onChange={onChange}
                 value={formData.employeeId}
                 icon={<IconEPassport size={18} />}
+              />
+            </Input.Wrapper>
+          </Grid.Col>
+          <Grid.Col span={12}>
+            <Input.Wrapper
+              label="Hourly Wage"
+              size="md"
+              error={errors && errors.hourlyWage && errors.hourlyWage}
+              required
+            >
+              <NumberInput
+                placeholder="Hourly Wage"
+                size="md"
+                variant="filled"
+                defaultValue={16.55}
+                min={16.55}
+                step={1}
+                precision={2}
+                max={100}
+                radius="md"
+                name="hourlyWage"
+                onChange={(value) => {
+                  setFormData({ ...formData, hourlyWage: value });
+                }}
+                value={formData.hourlyWage}
+                icon={<IconCurrencyDollar size={18} />}
               />
             </Input.Wrapper>
           </Grid.Col>
@@ -237,7 +263,7 @@ const CreateContact = ({ onClose }) => {
               placeholder="Country of Birth"
               itemComponent={CountriesList}
               data={countryList}
-              size="sm"
+              size="md"
               error={errors && errors.nationality && errors.nationality}
               onChange={(value) =>
                 setFormData({ ...formData, nationality: value })
@@ -257,7 +283,7 @@ const CreateContact = ({ onClose }) => {
             <Input.Wrapper
               label="Address"
               description="Current residentail address"
-              size="xs"
+              size="md"
               error={errors && errors.address && errors.address}
               required
             >
@@ -276,7 +302,7 @@ const CreateContact = ({ onClose }) => {
           <Grid.Col span={6}>
             <Input.Wrapper
               label="State/Provience"
-              size="xs"
+              size="md"
               error={errors && errors.state && errors.state}
               required
             >
@@ -295,7 +321,7 @@ const CreateContact = ({ onClose }) => {
           <Grid.Col span={6}>
             <Input.Wrapper
               label="City"
-              size="xs"
+              size="md"
               error={errors && errors.city && errors.city}
               required
             >
@@ -314,7 +340,7 @@ const CreateContact = ({ onClose }) => {
           <Grid.Col span={12}>
             <Input.Wrapper
               label="Postal Code"
-              size="xs"
+              size="md"
               error={errors && errors.postalCode && errors.postalCode}
               required
             >

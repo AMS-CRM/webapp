@@ -14,12 +14,6 @@ import {
   TextInput,
 } from "@mantine/core";
 import {
-  IconArrowBarRight,
-  IconArrowDown,
-  IconChevronDown,
-  IconChevronLeft,
-  IconClipboard,
-  IconClock,
   IconCurrencyDollar,
   IconDownload,
   IconLock,
@@ -86,6 +80,7 @@ const Contact = () => {
         },
         salary: {
           wage: contact.salary.wage,
+          payCycle: contact.salary.payCycle,
         },
       });
     }
@@ -150,7 +145,7 @@ const Contact = () => {
           <Tabs.Panel value="wages" pt="xs" my="lg">
             <Grid>
               <Grid.Col span={5}>
-                <Card style={{ backgroundColor: "#fcfcfc" }} p="xl">
+                <Card style={{ backgroundColor: "#f9f9f9" }} p="xl">
                   <Text color="gray.7" weight={600}>
                     Employee Salary
                   </Text>
@@ -171,12 +166,27 @@ const Contact = () => {
                     <Grid.Col span={12}>
                       <Select
                         variant="unstyled"
-                        defaultValue="Weekly"
                         className="selectInput"
+                        onChange={(value) => {
+                          console.log(value);
+                          setSalaryFormData({
+                            ...salaryFormData,
+                            salary: {
+                              ...salaryFormData.salary,
+                              payCycle: value,
+                            },
+                          });
+                        }}
+                        error={errors && errors["salary.payCycle"]}
+                        value={salaryFormData.salary?.payCycle}
                         style={{ padding: "0" }}
                         data={[
+                          { value: "Daily", label: "Daily" },
                           { value: "Weekly", label: "Weekly" },
-                          { value: "Bi-weekly", label: "Bi-weekly" },
+                          { value: "Bi-Weekly", label: "Bi-Weekly" },
+                          { value: "Semi-Monthly", label: "Semi-Monthly" },
+                          { value: "Monthly", label: "Monthly" },
+                          { value: "Annual", label: "Annual" },
                         ]}
                       />
                       <Text size="xs" color="dimmed">
@@ -199,13 +209,14 @@ const Contact = () => {
                           onChange={(e) =>
                             setSalaryFormData({
                               ...salaryFormData,
-                              payroll: {
+                              payroll: contact.payroll.hours && {
                                 amount:
                                   Number(e.target.value) *
                                     contact.payroll.hours +
                                   contact.payroll.extraPay,
                               },
                               salary: {
+                                ...salaryFormData.salary,
                                 wage: e.target.value,
                               },
                             })
@@ -430,7 +441,7 @@ const Contact = () => {
                     contact.payRunHistory.map((payroll) => {
                       return (
                         <Card
-                          style={{ background: "#f1f1f1" }}
+                          style={{ background: "#f9f9f9" }}
                           radius="md"
                           mb="10px"
                         >

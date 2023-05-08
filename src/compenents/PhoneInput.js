@@ -35,6 +35,7 @@ const PhoneInput = ({
             nothingFound="No Countries found"
             rightSection={<IconChevronDown size={12} />}
             rightSectionWidth={20}
+            defaultValue="Canada"
             error={dial_code_error && "Missing"}
             onChange={onDialCodeChange}
             searchable

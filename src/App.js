@@ -7,7 +7,7 @@ import { AuthenticationImage } from "./pages/Login2";
 
 import Dashboard from "./pages/Dashboard";
 import Register from "./pages/Register";
-import Applications from "./pages/Applications";
+import PageNotFound from "./pages/PageNotFound";
 import Payroll from "./pages/Payroll";
 import RunPayroll from "./pages/RunPayroll";
 import PayrollView from "./pages/PayrollView";
@@ -33,6 +33,7 @@ function App() {
             <Route path="/Payrolls/run/:page" element={<RunPayroll />} />
             <Route path="/Contact/:email" element={<Contact />} />
             <Route path="/whatsapp" element={<WhatsApp />} />
+            <Route path="*" element={<PageNotFound />} />
           </Route>
           <Route path="/login" element={<Login />} />
           <Route path="/login2" element={<AuthenticationImage />} />

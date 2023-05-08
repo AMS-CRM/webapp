@@ -18,8 +18,14 @@ body {
   font-weight: 600 !important;
   font-size: 20px !important;
 }
+form .mantine-InputWrapper-label {
+  margin-bottom: 10px;
+}
 .inputBold input:disabled {
   color: #000 !important;
+}
+.mantine-18fqrvl {
+  max-width: 1488px !important;
 }
 .mantine-Drawer-drawer {
   background-color: #f9f9f9 !important;

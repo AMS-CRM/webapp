@@ -248,7 +248,7 @@ const Contacts = () => {
   const largeScreen = useMediaQuery("(min-width: 1450px)");
 
   return (
-    <Container size={largeScreen ? "xl" : "md"} className="page-content">
+    <Container size={!largeScreen ? "md" : "xl"} className="page-content">
       <SendSmS opened={sendSmSOpened} setOpened={setSendSmS} />
 
       <Modal
