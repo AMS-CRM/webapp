@@ -164,7 +164,7 @@ const Contact = () => {
                         data={[{ value: "Hourly", label: "Hourly" }]}
                       />
                       <Text size="xs" color="dimmed">
-                        Employee wage typ
+                        Employee wage type
                       </Text>
                     </Grid.Col>
                     <Grid.Col span={12}>

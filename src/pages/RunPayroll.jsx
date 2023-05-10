@@ -150,7 +150,7 @@ const RunPayroll = () => {
       dispatch(reset());
     };
   }, [data, isSuccess, isLoading, payrollSuccess, payrollError, dispatch]);
-  console.log("errors", errors);
+
   const setPage = (page) => {
     dispatch(getContacts({ page }));
     navigate(`/Payrolls/run/${page}`);
@@ -640,7 +640,12 @@ const RunPayroll = () => {
           )}
         </Grid.Col>
         <Grid.Col span={3} offset={3} className={classes.actionButtons}>
-          <Button onClick={() => handleRunPayroll()}>Run Payroll</Button>
+          <Button
+            onClick={() => handleRunPayroll()}
+            disabled={selectAll == false && checked.length == 0}
+          >
+            Run Payroll
+          </Button>
         </Grid.Col>
       </Grid>
 
