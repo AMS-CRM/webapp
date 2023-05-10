@@ -217,7 +217,9 @@ const Contacts = () => {
 
         <td>{item.employeeId}</td>
         <td>
-          <Badge color="green">Active</Badge>
+          <Badge color={item.status == "Active" ? "green" : "red"}>
+            {item.status}
+          </Badge>
         </td>
         <td>
           <Anchor size="sm" href="#">

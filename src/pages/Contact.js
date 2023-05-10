@@ -126,8 +126,12 @@ const Contact = () => {
           </Grid.Col>
           <Grid.Col>
             <Group>
-              <Badge color="green" size="lg" variant="light">
-                Active
+              <Badge
+                color={contact.status == "Active" ? "green" : "red"}
+                size="lg"
+                variant="light"
+              >
+                {contact.status}
               </Badge>
               <Text size="sm">
                 since {moment(contact.createOn).format("DD MMMM, YYYY")}

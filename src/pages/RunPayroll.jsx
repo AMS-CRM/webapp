@@ -240,61 +240,35 @@ const RunPayroll = () => {
       >
         <Grid key={item._id} align="center">
           <Grid.Col span={4}>
-            <Grid align="center" justifyContent="" gutter="xs">
-              <Grid.Col span={1}>
-                <Checkbox
-                  size="xs"
-                  color="blue"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleCheckedItems(item._id);
-                  }}
-                  mt="6px"
-                  checked={itemCheckedStatus(item._id)}
-                />
-              </Grid.Col>
-              <Grid.Col span={1} mr="20px">
-                <Avatar
-                  color={colors[hash(item.firstName)]}
-                  radius="xl"
-                  variant="filled"
-                  size="md"
-                >
-                  {getInitials(`${item.firstName} ${item.lastName}`)}
-                </Avatar>
-              </Grid.Col>
-              <Grid.Col span={6}>
-                <Text size="sm" weight={500}>
-                  {`${item.firstName} ${item.lastName}`}
-                </Text>
+            <Group align="center" justifyContent="" gutter="xs">
+              <Checkbox
+                size="xs"
+                color="blue"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleCheckedItems(item._id);
+                }}
+                mt="6px"
+                checked={itemCheckedStatus(item._id)}
+              />
+              <Avatar
+                color={colors[hash(item.firstName)]}
+                radius="xl"
+                variant="filled"
+                size="md"
+              >
+                {getInitials(`${item.firstName} ${item.lastName}`)}
+              </Avatar>
+
+              <Text size="sm" weight={500}>
+                {`${item.firstName} ${item.lastName}`}
                 <Text size="sm" color="dimmed">
                   {item.email}
                 </Text>
-              </Grid.Col>
-            </Grid>
+              </Text>
+            </Group>
           </Grid.Col>
 
-          <Grid.Col span={2}>
-            <Select
-              className="selectInput"
-              placeholder="Weekly"
-              defaultValue={52}
-              variant="unstyled"
-              onClick={(e) => e.stopPropagation()}
-              style={{ width: "120px" }}
-              data={[
-                { value: 240, label: "Daily" },
-                { value: 52, label: "Weekly" },
-                { value: 26, label: "Bi-Weekly" },
-                { value: 24, label: "Semi-Monthly" },
-                { value: 12, label: "Monthly" },
-                { value: 1, label: "Annual" },
-              ]}
-            />
-            <Text mb="sm" size="xs" color="dimmed">
-              Pay Cycle
-            </Text>
-          </Grid.Col>
           <Grid.Col span={2}>
             <Input.Wrapper
               style={{ width: "120px" }}
@@ -309,10 +283,16 @@ const RunPayroll = () => {
                 weight={600}
                 icon={<IconClock size="1rem" />}
                 onChange={(e) => {
-                  const grossAmount =
-                    Number(
-                      rows.current[`${item._id}_hours`].value * item.salary.wage
-                    ) + Number(rows.current[`${item._id}_extraPay`].value);
+                  const grossAmount = (
+                    (Number(
+                      rows.current[`${item._id}_hours`].value *
+                        rows.current[`${item._id}_wage`].value
+                    ) *
+                      100 +
+                      Number(rows.current[`${item._id}_extraPay`].value) *
+                        100) /
+                    100
+                  ).toFixed(2);
 
                   rows.current[`${item._id}_amount`].value = grossAmount;
                   setSavedStatus(false);
@@ -341,17 +321,83 @@ const RunPayroll = () => {
           </Grid.Col>
           <Grid.Col span={2}>
             <Input.Wrapper
-              style={{ width: "100px" }}
+              style={{ width: "120px" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <TextInput
+                name="wage"
+                size="sm"
+                withBorder
+                radius="sm"
+                variant="unstyled"
+                weight={600}
+                icon={<IconCurrencyDollar size="1rem" />}
+                onChange={(e) => {
+                  const grossAmount = (
+                    (Number(
+                      rows.current[`${item._id}_hours`].value *
+                        rows.current[`${item._id}_wage`].value
+                    ) *
+                      100 +
+                      Number(rows.current[`${item._id}_extraPay`].value) *
+                        100) /
+                    100
+                  ).toFixed(2);
+
+                  rows.current[`${item._id}_amount`].value = grossAmount;
+                  setSavedStatus(false);
+                  setCurrentInput(`${item._id}_wage`);
+                }}
+                mt="5px"
+                ref={(el) => (rows.current[`${item._id}_wage`] = el)}
+                defaultValue={item.salary.wage}
+                error={
+                  error &&
+                  error["payroll.hours"] &&
+                  currentInput == `${item._id}_wage`
+                }
+                onBlur={(e) => {
+                  setError();
+                  // Compose the data for the
+                  dispatch(
+                    editContact({
+                      user: item._id,
+                      salary: {
+                        [e.target.name]: e.target.value,
+                      },
+                      payroll: {
+                        amount: rows.current[`${item._id}_amount`].value,
+                      },
+                    })
+                  );
+                }}
+              />
+            </Input.Wrapper>
+            <Text mb="sm" size="xs" color="dimmed" mt="5px">
+              Hourly wage
+            </Text>
+          </Grid.Col>
+          <Grid.Col span={2}>
+            <Input.Wrapper
+              style={{ width: "150px" }}
               onClick={(e) => e.stopPropagation()}
             >
               <TextInput
                 name="extraPay"
                 size="sm"
                 onChange={() => {
-                  rows.current[`${item._id}_amount`].value =
-                    Number(
-                      rows.current[`${item._id}_hours`].value * item.salary.wage
-                    ) + Number(rows.current[`${item._id}_extraPay`].value);
+                  const grossAmount = (
+                    (Number(
+                      rows.current[`${item._id}_hours`].value *
+                        rows.current[`${item._id}_wage`].value
+                    ) *
+                      100 +
+                      Number(rows.current[`${item._id}_extraPay`].value) *
+                        100) /
+                    100
+                  ).toFixed(2);
+
+                  rows.current[`${item._id}_amount`].value = grossAmount;
                   setSavedStatus(false);
                   setCurrentInput(`${item._id}_extraPay`);
                 }}
@@ -379,11 +425,10 @@ const RunPayroll = () => {
             </Text>
           </Grid.Col>
           <Grid.Col span={2}>
-            {console.log(item.payroll.amount)}
-            <Input.Wrapper style={{ width: "100px" }} key={item.payroll.amount}>
+            <Input.Wrapper style={{ width: "150px" }} key={item.payroll.amount}>
               <Input
                 name="amount"
-                size="sm"
+                size="xs"
                 radius="sm"
                 variant="unstyled"
                 icon={<IconCurrencyDollar size="1rem" />}

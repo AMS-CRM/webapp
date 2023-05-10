@@ -59,7 +59,10 @@ const Dashboard = () => {
                 <Stack justify="space-between" style={{ height: "100%" }}>
                   <div>
                     <Text color="#fff" weight="bold" size="36px" p="0" m="0">
-                      ${data?.user?.[0].balance}
+                      $
+                      {data?.user?.[0].balance.toLocaleString("en-US", {
+                        maximumFractionDigits: 2,
+                      }) || 0}
                     </Text>
                     <Text color="#fff" weight={500} p="0">
                       Current Balance
