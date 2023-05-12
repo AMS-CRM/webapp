@@ -147,7 +147,7 @@ const RunPayroll = () => {
     setSavedStatus(!isLoading);
 
     return () => {
-      dispatch(reset());
+      //  dispatch(reset());
     };
   }, [data, isSuccess, isLoading, payrollSuccess, payrollError, dispatch]);
 
@@ -221,7 +221,13 @@ const RunPayroll = () => {
   };
 
   const handleRunPayroll = () => {
-    dispatch(payrollCreate({ selectAll, user: checked }));
+    dispatch(
+      payrollCreate({
+        selectAll,
+        user: checked,
+        [searchQuery.keyword != "" && searchQuery.search]: searchQuery.keyword,
+      })
+    );
     setPayrollModal(true);
     setErrors([]);
   };
@@ -600,9 +606,8 @@ const RunPayroll = () => {
                 value={searchQuery.search}
                 data={[
                   { value: "email", label: "Email Address" },
-                  { value: "name", label: "Employee Name" },
-                  { value: "studentId", label: "Employee ID" },
-                  { value: "passport", label: "SIN Number" },
+                  { value: "firstName", label: "Employee Name" },
+                  { value: "employeeId", label: "Employee ID" },
                 ]}
                 onChange={(val) => searchBy(val)}
               />
@@ -648,16 +653,19 @@ const RunPayroll = () => {
           </Button>
         </Grid.Col>
       </Grid>
-
-      {isError && !data ? (
-        <Empty
-          title="Onboard and manage employees"
-          description="Onboarding employess to run payroll cycle and manage their salary. If you see this message click the button below to onboard your first employee."
-          icon={<IconClipboardList size="40" />}
-          formStatus={formStatus}
-          setFormStatus={setFormStatus}
-        />
-      ) : true ? (
+      {isError ? (
+        searchQuery.keyword != "" ? (
+          <Title>No serach result found</Title>
+        ) : (
+          <Empty
+            title="Onboard and manage employees"
+            description="Onboarding employess to run payroll cycle and manage their salary. If you see this message click the button below to onboard your first employee."
+            icon={<IconClipboardList size="40" />}
+            formStatus={formStatus}
+            setFormStatus={setFormStatus}
+          />
+        )
+      ) : (
         <>
           <ScrollArea>
             <>
@@ -670,8 +678,6 @@ const RunPayroll = () => {
             onChange={(page) => setPage(page)}
           />
         </>
-      ) : (
-        <TableLoader />
       )}
     </Container>
   );

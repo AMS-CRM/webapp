@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useMemo } from "react";
+import { forwardRef, useEffect, useState, useMemo } from "react";
 import { Input, Text, Select, Group, Grid } from "@mantine/core";
 import { IconChevronDown } from "@tabler/icons";
 
@@ -8,6 +8,7 @@ const PhoneInput = ({
   onDialCodeChange,
   phoneNumber,
   dial_code_error,
+  dial_code,
   phone_error,
 }) => {
   const SelectItems = forwardRef(
@@ -37,6 +38,7 @@ const PhoneInput = ({
             rightSectionWidth={20}
             defaultValue="Canada"
             error={dial_code_error && "Missing"}
+            value={dial_code}
             onChange={onDialCodeChange}
             searchable
             filter={(value, item) =>

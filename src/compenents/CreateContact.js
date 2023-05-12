@@ -34,7 +34,11 @@ const CreateContact = ({ onClose }) => {
     (state) => state.contacts
   );
   const [errors, setErrors] = useError("contacts");
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    nationality: "Canada",
+    dial_code: "Canada",
+    hourlyWage: 16.55,
+  });
   useEffect(() => {
     dispatch(getCountries());
   }, []);
@@ -230,7 +234,7 @@ const CreateContact = ({ onClose }) => {
                 placeholder="Hourly Wage"
                 size="md"
                 variant="filled"
-                defaultValue={16.55}
+                defaultValue={formData.hourlyWage}
                 min={16.55}
                 step={1}
                 precision={2}
@@ -252,6 +256,7 @@ const CreateContact = ({ onClose }) => {
               onDialCodeChange={onDialCodeChange}
               onChange={onChange}
               phoneNumber={formData.phone}
+              dial_code={formData.dial_code}
               dial_code_error={errors && errors.dial_code && errors.dial_code}
               phone_error={errors && errors.phone && errors.phone}
             />
@@ -271,6 +276,8 @@ const CreateContact = ({ onClose }) => {
               dropdownPosition="bottom"
               maxDropdownHeight={200}
               variant="filled"
+              defaultValue={formData.nationality}
+              value={formData.nationality}
               nothingFound="No Countries found"
               searchable
               filter={(value, item) =>
