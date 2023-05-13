@@ -9,6 +9,7 @@ const initialState = {
   list: [],
   payroll: {},
   paystubURL: "",
+  employeePayroll: {},
   payrollRun: {
     totalAmount: 0,
     users: [],
@@ -90,6 +91,24 @@ export const payrollCreate = createAsyncThunk(
   async (data, thunkAPI) => {
     try {
       return await payrollService.createPayroll(data);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          (error.response.data.error || error.response.data.message)) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+// Employee payroll - Get the single payroll for an employee
+export const getEmployeePayroll = createAsyncThunk(
+  "payroll/getEmployeePayroll",
+  async (data, thunkAPI) => {
+    try {
+      return await payrollService.getEmployeePayroll(data);
     } catch (error) {
       const message =
         (error.response &&
@@ -186,6 +205,21 @@ const payrollSlice = createSlice({
         state.paystubURL = action.payload;
       })
       .addCase(getPayStubDownloadLink.rejected, (state, action) => {
+        state.isError = true;
+        state.isLoading = false;
+        state.isSuccess = false;
+        state.message = action.payload;
+      })
+      .addCase(getEmployeePayroll.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getEmployeePayroll.fulfilled, (state, action) => {
+        state.isError = false;
+        state.isSuccess = true;
+        state.isLoading = false;
+        state.employeePayroll = action.payload;
+      })
+      .addCase(getEmployeePayroll.rejected, (state, action) => {
         state.isError = true;
         state.isLoading = false;
         state.isSuccess = false;

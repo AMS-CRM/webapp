@@ -11,6 +11,7 @@ import PageNotFound from "./pages/PageNotFound";
 import Payroll from "./pages/Payroll";
 import RunPayroll from "./pages/RunPayroll";
 import PayrollView from "./pages/PayrollView";
+import SingleEmployeePayroll from "./pages/SingleEmployeePayroll";
 
 import Contacts from "./pages/Contacts";
 import Contact from "./pages/Contact";
@@ -29,6 +30,10 @@ function App() {
             <Route path="/Dashboard" element={<Dashboard />} />
             <Route path="/Payrolls" element={<Payroll />} />
             <Route path="/Payrolls/run" element={<RunPayroll />} />
+            <Route
+              path="/payroll/:payrollNo/:employeeId"
+              element={<SingleEmployeePayroll />}
+            />
             <Route path="/Payrolls/:payroll" element={<PayrollView />} />
             <Route path="/Payrolls/run/:page" element={<RunPayroll />} />
             <Route path="/Contact/:email" element={<Contact />} />

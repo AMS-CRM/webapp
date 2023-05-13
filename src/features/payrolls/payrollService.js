@@ -2,7 +2,8 @@ import axiosDefault from "../../utils/axios";
 
 const PAYROLL = "/payroll";
 const PAYROLL_APPROVE = "/payroll/approve";
-const PAYSTUB = "/payroll/PAYSTUB";
+const PAYSTUB = "/payroll/paystub";
+const EMPLOYEE_PAYROLL = "/payroll/single";
 
 // Download link for paystub
 const paystubDownloadLink = async (data) => {
@@ -28,6 +29,12 @@ const createPayroll = async (data) => {
   return response.data.data;
 };
 
+// Get the employee payroll
+const getEmployeePayroll = async (data) => {
+  const response = await axiosDefault.post(EMPLOYEE_PAYROLL, data);
+  return response.data.data;
+};
+
 // List all the payrolls
 const listPayroll = async () => {
   const response = await axiosDefault.get(PAYROLL);
@@ -40,4 +47,5 @@ export default {
   getPayroll,
   approvePayroll,
   paystubDownloadLink,
+  getEmployeePayroll,
 };

@@ -478,7 +478,9 @@ const Contact = () => {
                                 <Text>Paystub</Text>
                                 <IconDownload size="1rem" />
                               </Button>
-                              <Link to={`/payrolls/${payroll.payrollNo}`}>
+                              <Link
+                                to={`/payroll/${payroll.payrollNo}/${contact._id}`}
+                              >
                                 <Button mt="10px" size="sm" variant="outline">
                                   View Payroll
                                 </Button>

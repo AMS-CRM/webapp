@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 
 import {
   Container,
@@ -21,8 +21,17 @@ const colors = {
   "Under Review": "blue",
   Pending: "yellow",
   Processing: "black",
-  Completed: "green",
+  Completed: "green.9",
   Error: "red",
+};
+
+const etransferColor = {
+  "in progress": "black",
+  successful: "green.9",
+  completed: "purple",
+  pending: "yellow",
+  failed: "red",
+  cancelled: "red",
 };
 
 const useStyles = createStyles((theme) => ({
@@ -40,6 +49,7 @@ const useStyles = createStyles((theme) => ({
 const PayrollView = () => {
   const { classes, cx } = useStyles();
   const { payroll } = useParams();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { payroll: data } = useSelector((state) => state.payroll);
   const largeScreen = useMediaQuery("(min-width: 1450px)");
@@ -117,8 +127,7 @@ const PayrollView = () => {
               <th>Employee Name</th>
               <th>CPP</th>
               <th>EI</th>
-              <th>Federal Tax</th>
-              <th>Provincial Tax</th>
+              <th>Trasfer Status</th>
               <th>Income Tax</th>
               <th>Gross Amount</th>
               <th>Net Amount</th>
@@ -129,12 +138,21 @@ const PayrollView = () => {
               data.payroll &&
               data.payroll.map((item) => {
                 return (
-                  <tr>
+                  <tr
+                    onClick={() =>
+                      navigate(`/payroll/${data.payrollNo}/${item.user._id}`)
+                    }
+                  >
                     <td>{`${item.user.firstName} ${item.user.lastName}`}</td>
                     <td>${item.data.employeePayrollDeductions.CPP}</td>
                     <td>${item.data.employeePayrollDeductions.EI}</td>
-                    <td>${item.data.employeePayrollDeductions.ITDfed}</td>
-                    <td>${item.data.employeePayrollDeductions.ITDprov}</td>
+                    <td>
+                      <Badge
+                        color={etransferColor[item?.transactionRef?.status]}
+                      >
+                        {item?.transactionRef?.status}
+                      </Badge>
+                    </td>
                     <td>${item.data.employeePayrollDeductions.ITD}</td>
                     <td>${item.data.amount}</td>
                     <td>${item.data.netAmount}</td>
