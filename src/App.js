@@ -17,6 +17,7 @@ import Contacts from "./pages/Contacts";
 import Contact from "./pages/Contact";
 
 import WhatsApp from "./pages/WhatsApp";
+import Transactions from "./pages/Transactions";
 
 function App() {
   return (
@@ -36,6 +37,8 @@ function App() {
             />
             <Route path="/Payrolls/:payroll" element={<PayrollView />} />
             <Route path="/Payrolls/run/:page" element={<RunPayroll />} />
+            <Route path="/transactions/" element={<Transactions />} />
+            <Route path="/transactions/:page" element={<Transactions />} />
             <Route path="/Contact/:email" element={<Contact />} />
             <Route path="/whatsapp" element={<WhatsApp />} />
             <Route path="*" element={<PageNotFound />} />

@@ -6,6 +6,7 @@ import contactReducer from "../features/contacts/contactSlice";
 import countriesReducer from "../features/countries/countriesSlice";
 import payrollReducer from "../features/payrolls/payrollSlice";
 import dashboardReducer from "../features/dashboard/dashboardSlice";
+import transactionReducer from "../features/transactions/transactionSlice";
 
 const reducer = {
   auth: authReducer,
@@ -13,6 +14,7 @@ const reducer = {
   countries: countriesReducer,
   payroll: payrollReducer,
   dashboard: dashboardReducer,
+  transaction: transactionReducer,
 };
 
 export const store = configureStore({ reducer });
