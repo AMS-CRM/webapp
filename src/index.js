@@ -16,6 +16,9 @@ root.render(
     <Provider store={store}>
       <MantineProvider
         theme={{
+          colors: {
+            text: ["#3c4357"],
+          },
           primaryColor: "dark",
           defaultRadius: 4,
           primaryShade: 6,

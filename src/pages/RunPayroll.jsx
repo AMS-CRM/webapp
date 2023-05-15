@@ -114,6 +114,9 @@ const RunPayroll = () => {
 
   useEffect(() => {
     dispatch(getContacts({ page }));
+    return () => {
+      dispatch(payrollReset());
+    };
   }, []);
 
   useEffect(() => {
@@ -145,10 +148,6 @@ const RunPayroll = () => {
     }
 
     setSavedStatus(!isLoading);
-
-    return () => {
-      //  dispatch(reset());
-    };
   }, [data, isSuccess, isLoading, payrollSuccess, payrollError, dispatch]);
 
   const setPage = (page) => {

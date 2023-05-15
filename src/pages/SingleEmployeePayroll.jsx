@@ -6,7 +6,9 @@ import {
   Grid,
   Title,
   Card,
+  LoadingOverlay,
   Button,
+  Loader,
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import {
@@ -59,6 +61,14 @@ const SingleEmployeePayroll = () => {
   }, [paystubURL]);
 
   const largeScreen = useMediaQuery("(min-width: 1450px)");
+
+  /*  if (isLoading) {
+    return (
+      <Container className="page-content" style={{ textAlign: "center" }}>
+        <Loader color="blue" size="xl" mt="200px" />
+      </Container>
+    );
+  }*/
 
   return (
     <Container size={largeScreen ? "xl" : "md"} className="page-content">

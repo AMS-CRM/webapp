@@ -9,6 +9,8 @@ import {
   Avatar,
   Group,
   Pagination,
+  Select,
+  TextInput,
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { hash } from "../utils/hash";
@@ -17,7 +19,7 @@ import {
   transactionList,
   reset,
 } from "../features/transactions/transactionSlice";
-import { useEffect, useState } from "react";
+import { createElement, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import moment from "moment";
@@ -37,14 +39,15 @@ const Transactions = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   let { page } = useParams();
-  const [activePage, setActivePage] = useState(page);
+  const [activePage, setActivePage] = useState(parseInt(page) || 1);
+  const [searchQuery, setSearchQuery] = useState({});
 
   if (page >= 0) {
     page = 1;
   }
 
   const {
-    transactions: { list, count },
+    transactions: { list, count, payrollsList },
   } = useSelector((state) => state.transaction);
 
   const onPageChange = (newPage) => {
@@ -55,15 +58,26 @@ const Transactions = () => {
   const largeScreen = useMediaQuery("(min-width: 1450px)");
 
   useEffect(() => {
-    dispatch(transactionList(activePage));
+    dispatch(transactionList({ page: activePage, ...searchQuery }));
     return () => dispatch(reset());
-  }, [activePage]);
+  }, [activePage, searchQuery]);
+
+  const onFilterChange = (value, name) => {
+    setSearchQuery({ ...searchQuery, [name]: value });
+    setActivePage(1);
+  };
 
   const rows =
     list &&
     list.map((transaction) => {
       return (
-        <tr>
+        <tr
+          onClick={() =>
+            navigate(
+              `/payroll/${transaction.payroll.payrollNo}/${transaction.to._id}`
+            )
+          }
+        >
           <td>
             <Text weight={600}>
               $
@@ -87,20 +101,88 @@ const Transactions = () => {
           </td>
           <td>Payroll {transaction.payroll.payrollNo}</td>
 
-          <td>{transaction.to.email}</td>
+          <td>
+            <Text color="text">{transaction.to.email}</Text>
+          </td>
         </tr>
       );
     });
+
+  const payrollListData =
+    payrollsList &&
+    payrollsList.length != 0 &&
+    payrollsList.map((payroll) => {
+      return {
+        label: `Payroll ${payroll.payrollNo}`,
+        value: payroll._id,
+      };
+    });
+
   return (
     <Container size={largeScreen ? "xl" : "md"} className="page-content">
       <Grid>
-        <Grid.Col span={6}>
+        <Grid.Col span={12}>
           <Title order={3}>Transactions</Title>
-          <Text color="dimmed" size="sm" mb="30px">
+          <Text color="dimmed" size="sm">
             List all transactions
           </Text>
         </Grid.Col>
       </Grid>
+
+      <Card
+        style={{ background: "#f9f9f9", overflow: "visible" }}
+        withBorder
+        shadow="sm"
+        radius="md"
+        my="20px"
+      >
+        <Grid>
+          <Grid.Col span={3}>
+            <Text color="gray.7" size="sm" weight={600} mb="6px" ml="4px">
+              Status filter
+            </Text>
+            <Select
+              placeholder="Status"
+              dropdownPosition="bottom"
+              name="search"
+              variant="filled"
+              zIndex={3}
+              defaultValue={{}}
+              value={searchQuery.status}
+              data={[
+                { value: {}, label: "All statues" },
+                {
+                  value: "successful",
+                  label: "successul",
+                },
+                {
+                  value: "failed",
+                  label: "failed",
+                },
+              ]}
+              onChange={(value) => onFilterChange(value, "status")}
+            />
+          </Grid.Col>
+          <Grid.Col span={3}>
+            <Text color="gray.7" size="sm" weight={600} mb="6px" ml="4px">
+              Payroll Filter
+            </Text>
+            <Select
+              searchable
+              variant="filled"
+              dropdownPosition="bottom"
+              placeholder="Choose Payroll"
+              style={{ cursor: "pointer" }}
+              name="payroll"
+              defaultValue={{}}
+              value={searchQuery.payroll}
+              data={payrollListData || []}
+              onChange={(value) => onFilterChange(value, "payroll")}
+            />
+          </Grid.Col>
+        </Grid>
+      </Card>
+
       <Card shadow="md" withBorder radius="md">
         <Table verticalSpacing="xs" horizontalSpace="xs" mb="30px">
           <thead mb="20px">
@@ -117,13 +199,12 @@ const Transactions = () => {
           <tbody>{rows}</tbody>
         </Table>
       </Card>
+
       <Pagination
+        page={activePage}
         mt="20px"
         total={count && Math.ceil(count / 10)}
-        value={page}
         onChange={onPageChange}
-        onNextPage={onPageChange}
-        onPreviousPage={onPageChange}
       />
     </Container>
   );

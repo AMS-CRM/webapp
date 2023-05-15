@@ -27,7 +27,7 @@ export const getPayStubDownloadLink = createAsyncThunk(
         (error.response && error.reponse.data && error.response.data.error) ||
         error.message ||
         error.toString();
-      thunkAPI.rejectWithValue(message);
+      return thunkAPI.rejectWithValue(message);
     }
   }
 );
@@ -45,7 +45,7 @@ export const getPayroll = createAsyncThunk(
           (error.response.data.message || error.response.data.error)) ||
         error.message ||
         error.toString();
-      thunkAPI.rejectWithValue(message);
+      return thunkAPI.rejectWithValue(message);
     }
   }
 );
@@ -63,7 +63,7 @@ export const approvePayroll = createAsyncThunk(
           (error.response.data.message || error.response.data.error)) ||
         error.message ||
         error.toString();
-      thunkAPI.rejectWithValue(message);
+      return thunkAPI.rejectWithValue(message);
     }
   }
 );
@@ -80,7 +80,7 @@ export const payrollList = createAsyncThunk(
         error.message ||
         error.toString();
 
-      thunkAPI.rejectWithValue(message);
+      return thunkAPI.rejectWithValue(message);
     }
   }
 );
@@ -127,8 +127,10 @@ const payrollSlice = createSlice({
   reducers: {
     reset: (state) => {
       return {
-        ...initialState,
-        list: [...state.list],
+        ...state,
+        isLoading: false,
+        isError: false,
+        isSuccess: false,
       };
     },
   },

@@ -2,8 +2,8 @@ import axiosDefault from "../../utils/axios";
 
 const TRANSACTION_LIST = "/transactions/list";
 
-const transactionsList = async (page) => {
-  const response = await axiosDefault.get(`${TRANSACTION_LIST}/${page}`);
+const transactionsList = async (data) => {
+  const response = await axiosDefault.post(TRANSACTION_LIST, data);
   return response.data.data;
 };
 

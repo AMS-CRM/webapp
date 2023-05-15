@@ -68,7 +68,7 @@ const Payroll = () => {
     dispatch(payrollList());
 
     return () => dispatch(reset());
-  }, [dispatch]);
+  }, []);
   const largeScreen = useMediaQuery("(min-width: 1450px)");
 
   const theme = useMantineTheme();
@@ -119,7 +119,7 @@ const Payroll = () => {
             >
               {item.status}
             </Text>
-            {item.status == "Process" && <Loader size="20" />}
+            {item.status == "Processing" && <Loader size="20" />}
           </Group>
         </td>
 

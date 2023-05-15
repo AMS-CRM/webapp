@@ -14,6 +14,7 @@ const paystubDownloadLink = async (data) => {
 // Approve a payroll
 const approvePayroll = async (data) => {
   const response = await axiosDefault.put(PAYROLL_APPROVE, data);
+
   return response.data.data;
 };
 
