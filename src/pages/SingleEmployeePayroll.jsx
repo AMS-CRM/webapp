@@ -50,8 +50,11 @@ const SingleEmployeePayroll = () => {
   );
 
   useEffect(() => {
-    dispatch(getEmployeePayroll({ employeeId, payrollNo }));
     return () => dispatch(reset());
+  }, []);
+
+  useEffect(() => {
+    dispatch(getEmployeePayroll({ employeeId, payrollNo }));
   }, [employeeId, payrollNo]);
 
   useEffect(() => {

@@ -5,14 +5,17 @@ import {
   Group,
   Code,
   Title,
+  Grid,
   Text,
   Tooltip,
   ActionIcon,
+  Avatar,
 } from "@mantine/core";
 import { IconCirclePlus, IconLogout, IconPlus } from "@tabler/icons";
 import { useDispatch } from "react-redux";
 import { logout, reset } from "../features/auth/authSlice";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const collections = [
   { emoji: "👍", label: "Whatsapp" },
@@ -130,6 +133,7 @@ const useStyles = createStyles((theme, _params, getRef) => {
 const SideBar = ({ data, toggleOpened, toggleOpenedStatus }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth);
   const { pathname } = useLocation();
 
   const onLogout = () => {
@@ -164,6 +168,7 @@ const SideBar = ({ data, toggleOpened, toggleOpenedStatus }) => {
         [classes.linkActive]: item.link === active,
       })}
       href={item.link}
+      size="sm"
       key={item.label}
       onClick={(event) => {
         event.preventDefault();
@@ -180,20 +185,29 @@ const SideBar = ({ data, toggleOpened, toggleOpenedStatus }) => {
     <Navbar className={classes.navbar} height={700} width={{ sm: 300 }} p="md">
       <Navbar.Section grow>
         <Group className={classes.header}>
-          <Title
-            align="left"
-            sx={(theme) => ({
-              fontWeight: 800,
-              fontSize: "28px",
-              width: "100%",
-            })}
-          >
-            CREW
-          </Title>
+          <Grid justify="space-between">
+            <Grid.Col span={5}>
+              <Title
+                align="left"
+                sx={(theme) => ({
+                  fontWeight: 800,
+                  fontSize: "28px",
+                  width: "100%",
+                })}
+              >
+                CREW
+              </Title>
+            </Grid.Col>
 
-          <Text color="dimmed" size="xs">
-            deep.shiv880@gmail.com
-          </Text>
+            <Grid.Col span={12}>
+              <Text weight={500} size="xs">
+                {user?.name}
+              </Text>
+              <Text color="dimmed" size="xs" weight={500}>
+                {user?.email}
+              </Text>
+            </Grid.Col>
+          </Grid>
         </Group>
         {links}
 

@@ -131,6 +131,7 @@ const payrollSlice = createSlice({
         isLoading: false,
         isError: false,
         isSuccess: false,
+        paystubURL: "",
       };
     },
   },
