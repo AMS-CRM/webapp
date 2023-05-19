@@ -1,6 +1,8 @@
 import { Title, Card, Text, Container } from "@mantine/core";
+import { useSelector } from "react-redux";
 
 const WelcomeHeader = () => {
+  const { user } = useSelector((state) => state.auth);
   return (
     <div>
       <Card style={{ background: "transparent" }}>
@@ -10,7 +12,7 @@ const WelcomeHeader = () => {
           src="https://htmlstream.com/front/assets/svg/illustrations/oc-building-apps.svg"
         />
         <Title order={2} mt="7px">
-          Welcome, Shivdeeep Singh
+          Welcome, {user?.name}
         </Title>
         <Text color="dimmed">
           Big updates are coming your way, a powerful new builder is here! Try

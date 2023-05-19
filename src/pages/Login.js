@@ -89,7 +89,7 @@ const Login = () => {
             Welcome to CREW
           </Text>
           <Text size="22px" weight={500} color="white">
-            Do more with Crew autopilot with less efforts. Run you payroll with
+            Do more with Crew Autopilot with less efforts. Run your payroll with
             ease with few clicks.
           </Text>
           <Card shadow="lg" radius="xl" w="200px" mt="20px">
