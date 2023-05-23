@@ -45,13 +45,14 @@ const SingleEmployeePayroll = () => {
   const { employeeId, payrollNo } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { employeePayroll, isLoading, paystubURL } = useSelector(
+  const { employeePayroll, isLoading, paystubURL, isSuccess } = useSelector(
     (state) => state.payroll
   );
 
   useEffect(() => {
+    // On success message reset the state
     return () => dispatch(reset());
-  }, []);
+  }, [isSuccess]);
 
   useEffect(() => {
     dispatch(getEmployeePayroll({ employeeId, payrollNo }));

@@ -39,6 +39,8 @@ const CreateContact = ({ onClose }) => {
     dial_code: "Canada",
     hourlyWage: 16.55,
   });
+
+  // Use memo to avoid the re-render
   useEffect(() => {
     dispatch(getCountries());
   }, []);
@@ -50,7 +52,6 @@ const CreateContact = ({ onClose }) => {
         ? navigate("/contacts")
         : dispatch(getContacts({ page: 0 }));
     }
-
     return () => dispatch(reset());
   }, [isSuccess]);
 

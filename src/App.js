@@ -35,8 +35,8 @@ function App() {
               path="/payroll/:payrollNo/:employeeId"
               element={<SingleEmployeePayroll />}
             />
-            <Route path="/Payrolls/:payroll" element={<PayrollView />} />
-            <Route path="/Payrolls/run/:page" element={<RunPayroll />} />
+            <Route path="/payrolls/:payroll" element={<PayrollView />} />
+            <Route path="/payrolls/run/:page" element={<RunPayroll />} />
             <Route path="/transactions/" element={<Transactions />} />
             <Route path="/transactions/:page" element={<Transactions />} />
             <Route path="/Contact/:email" element={<Contact />} />

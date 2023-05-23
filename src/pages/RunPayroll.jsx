@@ -148,6 +148,7 @@ const RunPayroll = () => {
     }
 
     setSavedStatus(!isLoading);
+    dispatch(reset());
   }, [data, isSuccess, isLoading, payrollSuccess, payrollError, dispatch]);
 
   const setPage = (page) => {
