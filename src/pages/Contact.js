@@ -8,6 +8,7 @@ import {
   Button,
   Select,
   Badge,
+  Loader,
   Tabs,
   Input,
   PasswordInput,
@@ -57,6 +58,7 @@ const Contact = () => {
     paystubURL,
   } = useSelector((state) => state.payroll);
   const [salaryFormData, setSalaryFormData] = useState({});
+  const [currentSelectedPayStub, setCurrentSelectedPayStub] = useState(null);
   const largeScreen = useMediaQuery("(min-width: 1450px)");
 
   useEffect(() => {
@@ -81,6 +83,7 @@ const Contact = () => {
         salary: {
           wage: contact.salary.wage,
           payCycle: contact.salary.payCycle,
+          transferMethod: contact.salary.transferMethod,
         },
       });
     }
@@ -97,6 +100,15 @@ const Contact = () => {
     setErrors({});
     dispatch(editContact(salaryFormData));
   };
+
+  if (isLoading) {
+    return (
+      <Container className="page-content" style={{ textAlign: "center" }}>
+        <Loader color="blue" size="xl" mt="200px" />
+      </Container>
+    );
+  }
+
   return (
     contact != "" && (
       <Container size={largeScreen ? "xl" : "md"} className="page-content">
@@ -172,11 +184,11 @@ const Contact = () => {
                         variant="unstyled"
                         className="selectInput"
                         onChange={(value) => {
-                          console.log(value);
                           setSalaryFormData({
                             ...salaryFormData,
                             salary: {
                               ...salaryFormData.salary,
+
                               payCycle: value,
                             },
                           });
@@ -214,6 +226,7 @@ const Contact = () => {
                             setSalaryFormData({
                               ...salaryFormData,
                               payroll: contact.payroll.hours && {
+                                ...salaryFormData.payroll,
                                 amount:
                                   Number(e.target.value) *
                                     contact.payroll.hours +
@@ -246,11 +259,26 @@ const Contact = () => {
                     <Grid.Col span={12} mb="20px">
                       <Select
                         variant="unstyled"
-                        defaultValue="E-transfer"
+                        name="transferMethod"
                         weight={600}
                         style={{ padding: "0" }}
+                        value={salaryFormData.salary?.transferMethod}
+                        onChange={(value) => {
+                          setSalaryFormData({
+                            ...salaryFormData,
+                            salary: {
+                              ...salaryFormData.salary,
+                              transferMethod: value,
+                            },
+                          });
+                        }}
+                        error={errors && errors["salary.transferMethod"]}
                         className="selectInput"
-                        data={[{ value: "E-transfer", label: "E-transfer" }]}
+                        data={[
+                          { value: "E-transfer", label: "E-transfer" },
+                          { value: "Direct Deposit", label: "Direct Deposit" },
+                          { value: "CHQ", label: "CHQ" },
+                        ]}
                       />
                       <Text size="xs" color="dimmed">
                         Salary transfer type
@@ -274,6 +302,7 @@ const Contact = () => {
                             setSalaryFormData({
                               ...salaryFormData,
                               payroll: {
+                                ...salaryFormData.payroll,
                                 securityQuestion: e.target.value,
                               },
                             })
@@ -303,6 +332,7 @@ const Contact = () => {
                             setSalaryFormData({
                               ...salaryFormData,
                               payroll: {
+                                ...salaryFormData.payroll,
                                 securityAnswer: e.target.value,
                               },
                             })
@@ -465,8 +495,12 @@ const Contact = () => {
                                 size="sm"
                                 mr="8px"
                                 disabled={!payroll.payroll.payStub && true}
-                                loading={payStubLoading}
+                                loading={
+                                  payStubLoading &&
+                                  currentSelectedPayStub == payroll._id
+                                }
                                 onClick={() => {
+                                  setCurrentSelectedPayStub(payroll._id);
                                   dispatch(
                                     getPayStubDownloadLink({
                                       userId: contact._id,
