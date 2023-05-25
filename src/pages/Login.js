@@ -4,8 +4,8 @@ import { useMediaQuery } from "@mantine/hooks";
 import { useError } from "../hooks/useError.js";
 import { Navigate } from "react-router-dom";
 import { login } from "../features/auth/authSlice";
-import coin from "../assets/coin1.png";
-import binary from "../assets/binary1.png";
+import abstract1 from "../assets/abstract.png";
+import abstract3 from "../assets/abstract3.png";
 import wallet from "../assets/wallet.png";
 
 import {
@@ -20,6 +20,7 @@ import {
   Group,
   Card,
   Button,
+  Badge,
 } from "@mantine/core";
 
 import { Link } from "react-router-dom";
@@ -55,7 +56,9 @@ const Login = () => {
   return (
     <div
       style={{
-        background: "black",
+        backgroundColor: "black",
+        backgroundImage: `url(${abstract3})`,
+        backgroundSize: "cover",
         width: "100vw",
         height: "100vh",
         padding: 0,
@@ -84,18 +87,39 @@ const Login = () => {
           zIndex: "2",
         }}
       >
-        <Grid.Col span={5}>
+        <Grid.Col span={largeScreen ? 4 : 5}>
           <Text size="40px" weight={700} color="white">
             Welcome to CREW
           </Text>
-          <Text size="22px" weight={500} color="white">
+          <Text size="40px" weight={700} color="white">
+            Easy.{" "}
+            <Badge
+              color="green"
+              variant="filled"
+              size="xl"
+              radius="xs"
+              style={{
+                padding: "20px",
+                textTransform: "none",
+                fontSize: "30px",
+                top: "-2px",
+                position: "relative",
+              }}
+            >
+              Payrolls
+            </Badge>
+            . Autopilot
+          </Text>
+          <Text size="22px" weight={500} color="white" mt="20px">
             Do more with Crew Autopilot with less efforts. Run your payroll with
             ease with few clicks.
           </Text>
           <Card shadow="lg" radius="xl" w="200px" mt="20px">
-            <Text color="black" weight={600} align="center">
-              Need help
-            </Text>
+            <Anchor href="mailto:me@shiv.ca">
+              <Text color="black" weight={600} align="center">
+                Need help
+              </Text>
+            </Anchor>
           </Card>
         </Grid.Col>
         <Grid.Col span={3}>

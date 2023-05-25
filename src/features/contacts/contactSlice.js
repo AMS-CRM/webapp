@@ -98,7 +98,11 @@ const contactSlice = createSlice({
   initialState: initialState,
   reducers: {
     reset: (state) => {
-      return { ...initialState, contacts: state.contacts };
+      return {
+        ...initialState,
+        contacts: state.contacts,
+        contact: state.contact,
+      };
     },
   },
   extraReducers: (builder) => {

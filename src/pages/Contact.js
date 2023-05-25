@@ -15,11 +15,13 @@ import {
   TextInput,
 } from "@mantine/core";
 import {
+  IconBuildingBank,
   IconCurrencyDollar,
   IconDownload,
   IconLock,
   IconQuestionCircle,
   IconTimeline,
+  IconTransferIn,
 } from "@tabler/icons";
 import {
   editContact,
@@ -30,6 +32,8 @@ import {
   getPayStubDownloadLink,
   reset as payrollReset,
 } from "../features/payrolls/payrollSlice";
+import { showNotification } from "@mantine/notifications";
+
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
@@ -59,12 +63,16 @@ const Contact = () => {
   } = useSelector((state) => state.payroll);
   const [salaryFormData, setSalaryFormData] = useState({});
   const [currentSelectedPayStub, setCurrentSelectedPayStub] = useState(null);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [submitApplication, setSubmitApplication] = useState(false);
   const largeScreen = useMediaQuery("(min-width: 1450px)");
 
   useEffect(() => {
     if (email) {
       dispatch(getContactWithEmail(email));
     }
+    // Set the initialLoading false
+    setInitialLoading(false);
 
     return () => {
       dispatch(reset());
@@ -84,6 +92,9 @@ const Contact = () => {
           wage: contact.salary.wage,
           payCycle: contact.salary.payCycle,
           transferMethod: contact.salary.transferMethod,
+          bankAccount: {
+            ...contact.salary.bankAccount,
+          },
         },
       });
     }
@@ -95,16 +106,33 @@ const Contact = () => {
     }
   }, [contact, payStubSuccess, paystubURL]);
 
+  useEffect(() => {
+    if (isSuccess && submitApplication) {
+      showNotification({
+        title: "Changes saves",
+        color: "green",
+        position: "top-right",
+        message: "Your changes are now updated",
+      });
+      setSubmitApplication(false);
+    }
+
+    if (isSuccess) {
+      dispatch(reset());
+    }
+  }, [isSuccess]);
+
   const handleFormSubmit = (e) => {
     e.preventDefault();
     setErrors({});
+    setSubmitApplication(true);
     dispatch(editContact(salaryFormData));
   };
 
-  if (isLoading) {
+  if (isLoading && initialLoading) {
     return (
       <Container className="page-content" style={{ textAlign: "center" }}>
-        <Loader color="blue" size="xl" mt="200px" />
+        <Loader size="xl" mt="200px" />
       </Container>
     );
   }
@@ -156,6 +184,7 @@ const Contact = () => {
             <Tabs.Tab value="summary">Summary</Tabs.Tab>
             <Tabs.Tab value="payroll">Payroll</Tabs.Tab>
             <Tabs.Tab value="wages">Wages</Tabs.Tab>
+            <Tabs.Tab value="bank">Bank details</Tabs.Tab>
           </Tabs.List>
 
           <Tabs.Panel value="wages" pt="xs" my="lg">
@@ -386,9 +415,11 @@ const Contact = () => {
                       </Text>
                     </div>
                     <div>
-                      <Button color="blue" variant="light">
-                        Run payroll
-                      </Button>
+                      {
+                        // <Button color="blue" variant="light">
+                        //Run payroll
+                        //</Button>
+                      }
                     </div>
                   </Grid>
                 </Card>
@@ -622,6 +653,108 @@ const Contact = () => {
                   <Text mb="20px" color="dimmed">
                     Total net amount ( CAD )
                   </Text>
+                </Card>
+              </Grid.Col>
+            </Grid>
+          </Tabs.Panel>
+
+          <Tabs.Panel value="bank" pt="xs" my="lg">
+            <Grid>
+              <Grid.Col span={5}>
+                <Card style={{ backgroundColor: "#f9f9f9" }}>
+                  <Grid justify="space-between">
+                    <Grid.Col span={12} mb="20px">
+                      <Text color="gray.8" weight={600}>
+                        Direct deposit
+                      </Text>
+                      <Text color="dimmed" weight={400}>
+                        Provide the bank details
+                      </Text>
+                    </Grid.Col>
+                    <Grid.Col span={6} mb="10px">
+                      <Text size="sm" weight={600}>
+                        Payee Name
+                      </Text>
+                      <Text color="dimmed" size="xs">
+                        Account holder name
+                      </Text>
+                    </Grid.Col>
+                    <Grid.Col span={4}>
+                      <TextInput
+                        disabled
+                        defaultValue={`${contact?.firstName} ${contact?.lastName}`}
+                        variant="filled"
+                      />
+                    </Grid.Col>
+                    <Grid.Col span={6} mb="10px">
+                      <Text size="sm" weight={600}>
+                        Account Number
+                      </Text>
+                      <Text color="dimmed" size="xs">
+                        Bank account number
+                      </Text>
+                    </Grid.Col>
+                    <Grid.Col span={4}>
+                      <TextInput
+                        value={salaryFormData?.salary?.bankAccount?.accountNo}
+                        variant="filled"
+                        name="accountNo"
+                        onChange={(e) => {
+                          setSalaryFormData({
+                            ...salaryFormData,
+                            salary: {
+                              ...salaryFormData.salary,
+                              bankAccount: {
+                                ...salaryFormData.salary.bankAccount,
+                                accountNo: e.target.value,
+                              },
+                            },
+                          });
+                        }}
+                        error={errors && errors["salary.bankAccount.accountNo"]}
+                        icon={<IconBuildingBank size="1rem" />}
+                      />
+                    </Grid.Col>
+                    <Grid.Col span={6} mb="10px">
+                      <Text size="sm" weight={600}>
+                        Bank Transit
+                      </Text>
+                      <Text color="dimmed" size="xs">
+                        Bank Transit number
+                      </Text>
+                    </Grid.Col>
+                    <Grid.Col span={4}>
+                      <TextInput
+                        value={salaryFormData?.salary?.bankAccount?.transitNo}
+                        variant="filled"
+                        name="accountNo"
+                        onChange={(e) => {
+                          setSalaryFormData({
+                            ...salaryFormData,
+                            salary: {
+                              ...salaryFormData.salary,
+                              bankAccount: {
+                                ...salaryFormData.salary.bankAccount,
+                                transitNo: e.target.value,
+                              },
+                            },
+                          });
+                        }}
+                        error={errors && errors["salary.bankAccount.transitNo"]}
+                        icon={<IconTransferIn size="1rem" />}
+                      />
+                    </Grid.Col>
+                    <Grid.Col span={12}>
+                      <Button
+                        style={{ float: "right" }}
+                        variant="outline"
+                        onClick={(e) => handleFormSubmit(e)}
+                        loading={isLoading}
+                      >
+                        Save changes
+                      </Button>
+                    </Grid.Col>
+                  </Grid>
                 </Card>
               </Grid.Col>
             </Grid>
