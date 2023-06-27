@@ -195,7 +195,7 @@ const SideBar = ({ data, toggleOpened, toggleOpenedStatus }) => {
                   width: "100%",
                 })}
               >
-                CREW
+                {process.env.REACT_APP_BRANDING}
               </Title>
             </Grid.Col>
 

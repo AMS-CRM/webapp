@@ -27,12 +27,14 @@ import moment from "moment";
 const colors = ["blue", "red", "orange", "yellow", "green", "teal", "purple"];
 
 const etransferColor = {
-  "in progress": "black",
-  successful: "green.9",
-  completed: "purple",
-  pending: "yellow.9",
-  failed: "red",
-  cancelled: "red",
+  InProgress: "yellow.9",
+  InProgress: "yellow9",
+  UnderReview: "purple.8",
+  Successful: "green.9",
+  Completed: "purple",
+  Pending: "yellow.9",
+  Failed: "red",
+  Cancelled: "red",
 };
 
 const Transactions = () => {

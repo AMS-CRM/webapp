@@ -76,7 +76,7 @@ const Login = () => {
           display: "inline",
         }}
       >
-        CREW
+        {process.env.REACT_APP_BRANDING}
       </Text>
       <Grid
         justify="space-around"
@@ -89,7 +89,7 @@ const Login = () => {
       >
         <Grid.Col span={largeScreen ? 4 : 5}>
           <Text size="40px" weight={700} color="white">
-            Welcome to CREW
+            Welcome to {process.env.REACT_APP_BRANDING}
           </Text>
           <Text size="40px" weight={700} color="white">
             Easy.{" "}
@@ -111,8 +111,8 @@ const Login = () => {
             . Autopilot
           </Text>
           <Text size="22px" weight={500} color="white" mt="20px">
-            Do more with Crew Autopilot with less efforts. Run your payroll with
-            ease with few clicks.
+            Do more with {process.env.REACT_APP_BRANDING} Autopilot with less
+            efforts. Run your payroll with ease with few clicks.
           </Text>
           <Card shadow="lg" radius="xl" w="200px" mt="20px">
             <Anchor href="mailto:me@shiv.ca">
@@ -125,7 +125,7 @@ const Login = () => {
         <Grid.Col span={3}>
           <Card withBorder shadow="lg" w="380px" radius="md" p="xl" py="40px">
             <Text size="30px" weight={600}>
-              Login to CREW
+              Login to {process.env.REACT_APP_BRANDING}
             </Text>
             <Text color="dimmed" size="sm" mt={5}>
               Do not have an account yet?{" "}
