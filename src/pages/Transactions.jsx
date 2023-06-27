@@ -28,12 +28,17 @@ const colors = ["blue", "red", "orange", "yellow", "green", "teal", "purple"];
 
 const etransferColor = {
   InProgress: "yellow.9",
-  UnderReview: "purple.8",
+  UnderReview: "indigo.8",
   Successful: "green.9",
   Completed: "green.9",
   Pending: "yellow.9",
   Failed: "red.7",
   Cancelled: "red.7",
+};
+
+const transferTypeColors = {
+  "E-transfer": "indigo.8",
+  "Direct Deposit": "teal.7",
 };
 
 const Transactions = () => {
@@ -96,7 +101,7 @@ const Transactions = () => {
           <td>{transaction.transactionId}</td>
           <td>{moment(transaction.createdOn).format("DD MMMM, YYYY")}</td>
           <td>
-            <Badge color="indigo.8" variant="light">
+            <Badge color={transferTypeColors[transaction.type]} variant="light">
               {transaction.type}
             </Badge>
           </td>
@@ -153,12 +158,12 @@ const Transactions = () => {
               data={[
                 { value: {}, label: "All statues" },
                 {
-                  value: "successful",
-                  label: "successul",
+                  value: "Completed",
+                  label: "Completed",
                 },
                 {
-                  value: "failed",
-                  label: "failed",
+                  value: "Failed",
+                  label: "Failed",
                 },
               ]}
               onChange={(value) => onFilterChange(value, "status")}
