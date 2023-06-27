@@ -747,6 +747,37 @@ const Contact = () => {
                         icon={<IconTransferIn size="1rem" />}
                       />
                     </Grid.Col>
+                    <Grid.Col span={6} mb="10px">
+                      <Text size="sm" weight={600}>
+                        Institute No
+                      </Text>
+                      <Text color="dimmed" size="xs">
+                        Bank 3 digits Institute number
+                      </Text>
+                    </Grid.Col>
+                    <Grid.Col span={4}>
+                      <TextInput
+                        value={salaryFormData?.salary?.bankAccount?.instituteNo}
+                        variant="filled"
+                        name="instituteNo"
+                        onChange={(e) => {
+                          setSalaryFormData({
+                            ...salaryFormData,
+                            salary: {
+                              ...salaryFormData.salary,
+                              bankAccount: {
+                                ...salaryFormData.salary.bankAccount,
+                                instituteNo: e.target.value,
+                              },
+                            },
+                          });
+                        }}
+                        error={
+                          errors && errors["salary.bankAccount.instituteNo"]
+                        }
+                        icon={<IconTransferIn size="1rem" />}
+                      />
+                    </Grid.Col>
                     <Grid.Col span={12}>
                       <Button
                         style={{ float: "right" }}
