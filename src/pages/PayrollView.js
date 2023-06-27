@@ -38,12 +38,13 @@ const colors = {
 };
 
 const etransferColor = {
-  "in progress": "black",
-  successful: "green.9",
-  completed: "purple",
-  pending: "yellow",
-  failed: "red",
-  cancelled: "red",
+  InProgress: "yellow.9",
+  UnderReview: "purple.8",
+  Successful: "green.9",
+  Completed: "green.9",
+  Pending: "yellow.9",
+  Failed: "red.7",
+  Cancelled: "red.7",
 };
 
 const useStyles = createStyles((theme) => ({
