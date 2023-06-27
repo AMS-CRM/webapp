@@ -3,7 +3,6 @@ import ProtectedRoute from "./compenents/ProtectedRoute";
 
 // Get the pages
 import Login from "./pages/Login";
-import { AuthenticationImage } from "./pages/Login2";
 
 import Dashboard from "./pages/Dashboard";
 import Register from "./pages/Register";
@@ -44,7 +43,6 @@ function App() {
             <Route path="*" element={<PageNotFound />} />
           </Route>
           <Route path="/login" element={<Login />} />
-          <Route path="/login2" element={<AuthenticationImage />} />
 
           <Route path="/register" element={<Register />} />
         </Routes>

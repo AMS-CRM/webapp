@@ -28,7 +28,6 @@ const colors = ["blue", "red", "orange", "yellow", "green", "teal", "purple"];
 
 const etransferColor = {
   InProgress: "yellow.9",
-  InProgress: "yellow9",
   UnderReview: "purple.8",
   Successful: "green.9",
   Completed: "purple",
