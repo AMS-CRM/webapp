@@ -190,7 +190,10 @@ const Contact = () => {
           <Tabs.Panel value="wages" pt="xs" my="lg">
             <Grid>
               <Grid.Col span={5}>
-                <Card style={{ backgroundColor: "#f9f9f9" }} p="xl">
+                <Card
+                  style={{ backgroundColor: "#f9f9f9", overflow: "visible" }}
+                  p="xl"
+                >
                   <Text color="gray.7" weight={600}>
                     Employee Salary
                   </Text>
