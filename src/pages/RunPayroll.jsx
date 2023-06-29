@@ -180,11 +180,20 @@ const RunPayroll = () => {
       rows.current[`${item}_${e.target.name}`].value = e.target.value;
     }
 
+    const overTime = (
+      Number(rows.current[`${item}_wage`].value) *
+      1.5 *
+      Number(rows.current[`${item}_overTimeHours`].value)
+    ).toFixed(2);
+
+    // Wage * 1.5 * otHourss
     const grossAmount = (
       (Number(
         rows.current[`${item}_hours`].value * rows.current[`${item}_wage`].value
       ) *
         100 +
+        Number(rows.current[`${item}_bonusPay`].value) * 100 +
+        overTime * 100 +
         Number(rows.current[`${item}_extraPay`].value) * 100) /
       100
     ).toFixed(2);
@@ -429,11 +438,22 @@ const RunPayroll = () => {
                 Others +
               </Anchor>
             </Grid.Col>
+
             <Grid.Col span={1}>
               <Input.Wrapper
                 style={{ width: "100px" }}
                 key={item.payroll.amount}
               >
+                <TextInput
+                  type="hidden"
+                  ref={(el) => (rows.current[`${item._id}_overTimeHours`] = el)}
+                  defaultValue={item.payroll.overTimeHours}
+                />
+                <TextInput
+                  type="hidden"
+                  ref={(el) => (rows.current[`${item._id}_bonusPay`] = el)}
+                  defaultValue={item.payroll.bonusPay}
+                />
                 <Input
                   name="amount"
                   size="xs"
@@ -560,7 +580,6 @@ const RunPayroll = () => {
                       </Text>
                     </Grid.Col>
                     <Grid.Col span={3}>
-                      {console.log(currentItem, rows.current)}
                       <TextInput
                         variant="filled"
                         icon={<IconCurrencyDollar size="1rem" />}
@@ -644,6 +663,75 @@ const RunPayroll = () => {
                           error &&
                           error["payroll.hours"] &&
                           currentInput == `${currentItem[0]}_extraPay`
+                        }
+                        onBlur={(e) => {
+                          onInputChange(
+                            e,
+                            currentItem[0],
+                            rows.current[`${currentItem[0]}_amount`].value
+                          );
+                        }}
+                      />
+                    </Grid.Col>
+                  </Grid>
+
+                  <Grid justify="space-between" mt="10px">
+                    <Grid.Col span={6}>
+                      <Text size="sm" weight={600}>
+                        Over Time hours
+                      </Text>
+                      <Text color="dimmed" size="xs">
+                        Number of extra hours employee worked
+                      </Text>
+                    </Grid.Col>
+                    <Grid.Col span={3}>
+                      <TextInput
+                        variant="filled"
+                        icon={<IconClock size="1rem" />}
+                        mt="5px"
+                        name="overTimeHours"
+                        defaultValue={
+                          rows.current[`${currentItem[0]}_overTimeHours`].value
+                        }
+                        onChange={(e) => onInputUpdate(e, currentItem[0], true)}
+                        error={
+                          error &&
+                          error["payroll.overTimeHours"] &&
+                          currentInput == `${currentItem[0]}_overTimeHours`
+                        }
+                        onBlur={(e) => {
+                          onInputChange(
+                            e,
+                            currentItem[0],
+                            rows.current[`${currentItem[0]}_amount`].value
+                          );
+                        }}
+                      />
+                    </Grid.Col>
+                  </Grid>
+                  <Grid justify="space-between" mt="10px">
+                    <Grid.Col span={6}>
+                      <Text size="sm" weight={600}>
+                        Bonus
+                      </Text>
+                      <Text color="dimmed" size="xs">
+                        Bonus pay for employee
+                      </Text>
+                    </Grid.Col>
+                    <Grid.Col span={3}>
+                      <TextInput
+                        variant="filled"
+                        icon={<IconCurrencyDollar size="1rem" />}
+                        mt="5px"
+                        name="bonusPay"
+                        onChange={(e) => onInputUpdate(e, currentItem[0], true)}
+                        defaultValue={
+                          rows.current[`${currentItem[0]}_bonusPay`].value
+                        }
+                        error={
+                          error &&
+                          error["payroll.bonusPay"] &&
+                          currentInput == `${currentItem[0]}_bonusPay`
                         }
                         onBlur={(e) => {
                           onInputChange(
