@@ -3,7 +3,7 @@ import { showNotification } from "@mantine/notifications";
 import { useSelector } from "react-redux";
 
 export const useError = (errorType) => {
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState(null);
   const { isError, isSuccess, isLoading, message } = useSelector(
     (state) => state[errorType]
   );
@@ -23,6 +23,8 @@ export const useError = (errorType) => {
         position: "top-right",
         message: message,
       });
+    } else {
+      setErrors(null);
     }
   }, [isLoading, isSuccess, message, isError]);
 

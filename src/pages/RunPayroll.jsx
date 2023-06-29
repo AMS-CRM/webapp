@@ -1,4 +1,11 @@
-import { useEffect, useState, useRef, useMemo, createRef } from "react";
+import {
+  useEffect,
+  useState,
+  useRef,
+  useMemo,
+  createRef,
+  useCallback,
+} from "react";
 import {
   getContacts,
   editContact,
@@ -55,6 +62,7 @@ import {
   IconCurrencyDollar,
 } from "@tabler/icons";
 import Empty from "../layout/Empty.js";
+import SavingStatus from "../compenents/SavingStatus";
 
 const useStyles = createStyles((theme) => ({
   thead: {
@@ -104,6 +112,8 @@ const RunPayroll = () => {
   const [seletedItem, setSelectedItem] = useState(false);
   const [checked, setChecked] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
+  const [currentItem, setcurrentItem] = useState(null);
+  const [extraModal, setExtraModal] = useState(false);
   const [sendSmSOpened, setSendSmS] = useState(false);
   const [payrollModal, setPayrollModal] = useState(false);
   const [saveStatus, setSavedStatus] = useState(true);
@@ -162,8 +172,26 @@ const RunPayroll = () => {
       ...state,
       [e.target.name]: e.target.value,
     }));
-
     dispatch(getContacts({ page: 0, search, keyword: e.target.value }));
+  };
+
+  const onInputUpdate = (e, item, setValue = false) => {
+    if (setValue) {
+      rows.current[`${item}_${e.target.name}`].value = e.target.value;
+    }
+
+    const grossAmount = (
+      (Number(
+        rows.current[`${item}_hours`].value * rows.current[`${item}_wage`].value
+      ) *
+        100 +
+        Number(rows.current[`${item}_extraPay`].value) * 100) /
+      100
+    ).toFixed(2);
+
+    rows.current[`${item}_amount`].value = grossAmount;
+    setSavedStatus(false);
+    setCurrentInput(`${item}_${e.target.name}`);
   };
 
   const searchBy = (search) => {
@@ -207,7 +235,8 @@ const RunPayroll = () => {
   };
 
   const onInputChange = (e, user, grossAmount, type = "payroll") => {
-    setError();
+    setError(null);
+
     // Compose the data for the
     dispatch(
       editContact({
@@ -232,354 +261,204 @@ const RunPayroll = () => {
     setErrors([]);
   };
 
-  const sheet =
-    data &&
-    data.contacts.length > 0 &&
-    data.contacts.map((item) => (
-      <Card
-        radius="md"
-        mb="20px"
-        py="xl"
-        style={{
-          background: "#f9f9f9",
-        }}
-      >
-        <Grid key={item._id} align="center">
-          <Grid.Col span={4}>
-            <Group align="center" justifyContent="" gutter="xs">
-              <Checkbox
-                size="xs"
-                color="blue"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleCheckedItems(item._id);
-                }}
-                mt="6px"
-                checked={itemCheckedStatus(item._id)}
-              />
-              <Avatar
-                color={colors[hash(item.firstName)]}
-                radius="xl"
-                variant="filled"
-                size="md"
-              >
-                {getInitials(`${item.firstName} ${item.lastName}`)}
-              </Avatar>
+  const sheet = useMemo(() => {
+    return (
+      data &&
+      data.contacts.length > 0 &&
+      data.contacts.map((item, index) => (
+        <Card
+          radius="md"
+          mb="20px"
+          py="xl"
+          key={index}
+          style={{
+            background: "#f9f9f9",
+          }}
+        >
+          <Grid key={item._id} align="center" grow gutter="xl">
+            <Grid.Col span={4}>
+              <Group align="center" gutter="xs">
+                <Checkbox
+                  size="xs"
+                  color="blue"
+                  onChange={(e) => {
+                    e.stopPropagation();
+                    handleCheckedItems(item._id);
+                  }}
+                  mt="6px"
+                  checked={itemCheckedStatus(item._id)}
+                />
+                <Avatar
+                  color={colors[hash(item.firstName)]}
+                  radius="xl"
+                  variant="filled"
+                  size="md"
+                >
+                  {getInitials(`${item.firstName} ${item.lastName}`)}
+                </Avatar>
 
-              <Text size="sm" weight={500}>
-                {`${item.firstName} ${item.lastName}`}
-                <Text size="sm" color="dimmed">
-                  {item.email}
+                <Text size="sm" weight={500}>
+                  {`${item.firstName} ${item.lastName}`}
+                  <Text size="sm" color="dimmed">
+                    {item.email}
+                  </Text>
                 </Text>
+              </Group>
+            </Grid.Col>
+
+            <Grid.Col span={1}>
+              <Input.Wrapper
+                style={{ width: "120px" }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <TextInput
+                  name="hours"
+                  size="sm"
+                  radius="sm"
+                  variant="unstyled"
+                  weight={600}
+                  icon={<IconClock size="1rem" />}
+                  onChange={(e) => onInputUpdate(e, item._id)}
+                  mt="5px"
+                  ref={(el) => (rows.current[`${item._id}_hours`] = el)}
+                  defaultValue={item.payroll.hours}
+                  error={
+                    error &&
+                    error["payroll.hours"] &&
+                    currentInput == `${item._id}_hours`
+                  }
+                  onBlur={(e) =>
+                    onInputChange(
+                      e,
+                      item._id,
+                      rows.current[`${item._id}_amount`].value
+                    )
+                  }
+                />
+              </Input.Wrapper>
+              <Text mb="sm" size="xs" color="dimmed" mt="5px">
+                Work Hours
               </Text>
-            </Group>
-          </Grid.Col>
+            </Grid.Col>
+            <Grid.Col span={1}>
+              <Input.Wrapper
+                style={{ width: "120px" }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <TextInput
+                  name="wage"
+                  size="sm"
+                  radius="sm"
+                  variant="unstyled"
+                  weight={600}
+                  icon={<IconCurrencyDollar size="1rem" />}
+                  onChange={(e) => onInputUpdate(e, item._id)}
+                  mt="5px"
+                  ref={(el) => (rows.current[`${item._id}_wage`] = el)}
+                  defaultValue={item.salary.wage}
+                  error={
+                    error &&
+                    error["salary.wage"] &&
+                    currentInput == `${item._id}_wage`
+                  }
+                  onBlur={(e) => {
+                    setError();
+                    // Compose the data for the
+                    dispatch(
+                      editContact({
+                        user: item._id,
+                        salary: {
+                          [e.target.name]: e.target.value,
+                        },
+                        payroll: {
+                          amount: rows.current[`${item._id}_amount`].value,
+                        },
+                      })
+                    );
+                  }}
+                />
+              </Input.Wrapper>
+              <Text mb="sm" size="xs" color="dimmed" mt="5px">
+                Hourly wage
+              </Text>
+            </Grid.Col>
+            <Grid.Col span={1}>
+              <Input.Wrapper
+                style={{ width: "100px" }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <TextInput
+                  name="extraPay"
+                  size="sm"
+                  onChange={(e) => onInputUpdate(e, item._id)}
+                  radius="sm"
+                  variant="unstyled"
+                  icon={<IconCurrencyDollar size="1rem" />}
+                  error={
+                    error &&
+                    error["payroll.extraPay"] &&
+                    currentInput == `${item._id}_extraPay`
+                  }
+                  onBlur={(e) =>
+                    onInputChange(
+                      e,
+                      item._id,
+                      rows.current[`${item._id}_amount`].value
+                    )
+                  }
+                  ref={(el) => (rows.current[`${item._id}_extraPay`] = el)}
+                  defaultValue={item.payroll.extraPay}
+                />
+              </Input.Wrapper>
+              <Text mb="sm" size="xs" color="dimmed" mt="5px">
+                Vacation pay
+              </Text>
+            </Grid.Col>
 
-          <Grid.Col span={2}>
-            <Input.Wrapper
-              style={{ width: "120px" }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <TextInput
-                name="hours"
-                size="sm"
-                withBorder
-                radius="sm"
-                variant="unstyled"
-                weight={600}
-                icon={<IconClock size="1rem" />}
-                onChange={(e) => {
-                  const grossAmount = (
-                    (Number(
-                      rows.current[`${item._id}_hours`].value *
-                        rows.current[`${item._id}_wage`].value
-                    ) *
-                      100 +
-                      Number(rows.current[`${item._id}_extraPay`].value) *
-                        100) /
-                    100
-                  ).toFixed(2);
-
-                  rows.current[`${item._id}_amount`].value = grossAmount;
-                  setSavedStatus(false);
-                  setCurrentInput(`${item._id}_hours`);
-                }}
-                mt="5px"
-                ref={(el) => (rows.current[`${item._id}_hours`] = el)}
-                defaultValue={item.payroll.hours}
-                error={
-                  error &&
-                  error["payroll.hours"] &&
-                  currentInput == `${item._id}_hours`
-                }
-                onBlur={(e) =>
-                  onInputChange(
-                    e,
-                    item._id,
-                    rows.current[`${item._id}_amount`].value
-                  )
-                }
-              />
-            </Input.Wrapper>
-            <Text mb="sm" size="xs" color="dimmed" mt="5px">
-              Work Hours
-            </Text>
-          </Grid.Col>
-          <Grid.Col span={2}>
-            <Input.Wrapper
-              style={{ width: "120px" }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <TextInput
-                name="wage"
-                size="sm"
-                withBorder
-                radius="sm"
-                variant="unstyled"
-                weight={600}
-                icon={<IconCurrencyDollar size="1rem" />}
-                onChange={(e) => {
-                  const grossAmount = (
-                    (Number(
-                      rows.current[`${item._id}_hours`].value *
-                        rows.current[`${item._id}_wage`].value
-                    ) *
-                      100 +
-                      Number(rows.current[`${item._id}_extraPay`].value) *
-                        100) /
-                    100
-                  ).toFixed(2);
-
-                  rows.current[`${item._id}_amount`].value = grossAmount;
-                  setSavedStatus(false);
-                  setCurrentInput(`${item._id}_wage`);
-                }}
-                mt="5px"
-                ref={(el) => (rows.current[`${item._id}_wage`] = el)}
-                defaultValue={item.salary.wage}
-                error={
-                  error &&
-                  error["payroll.hours"] &&
-                  currentInput == `${item._id}_wage`
-                }
-                onBlur={(e) => {
-                  setError();
-                  // Compose the data for the
-                  dispatch(
-                    editContact({
-                      user: item._id,
-                      salary: {
-                        [e.target.name]: e.target.value,
-                      },
-                      payroll: {
-                        amount: rows.current[`${item._id}_amount`].value,
-                      },
-                    })
-                  );
-                }}
-              />
-            </Input.Wrapper>
-            <Text mb="sm" size="xs" color="dimmed" mt="5px">
-              Hourly wage
-            </Text>
-          </Grid.Col>
-          <Grid.Col span={2}>
-            <Input.Wrapper
-              style={{ width: "150px" }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <TextInput
-                name="extraPay"
-                size="sm"
-                onChange={() => {
-                  const grossAmount = (
-                    (Number(
-                      rows.current[`${item._id}_hours`].value *
-                        rows.current[`${item._id}_wage`].value
-                    ) *
-                      100 +
-                      Number(rows.current[`${item._id}_extraPay`].value) *
-                        100) /
-                    100
-                  ).toFixed(2);
-
-                  rows.current[`${item._id}_amount`].value = grossAmount;
-                  setSavedStatus(false);
-                  setCurrentInput(`${item._id}_extraPay`);
-                }}
-                radius="sm"
-                variant="unstyled"
-                icon={<IconCurrencyDollar size="1rem" />}
-                error={
-                  error &&
-                  error["payroll.extraPay"] &&
-                  currentInput == `${item._id}_extraPay`
-                }
-                onBlur={(e) =>
-                  onInputChange(
-                    e,
-                    item._id,
-                    rows.current[`${item._id}_amount`].value
-                  )
-                }
-                ref={(el) => (rows.current[`${item._id}_extraPay`] = el)}
-                defaultValue={item.payroll.extraPay}
-              />
-            </Input.Wrapper>
-            <Text mb="sm" size="xs" color="dimmed" mt="5px">
-              Vaction pay
-            </Text>
-          </Grid.Col>
-          <Grid.Col span={2}>
-            <Input.Wrapper style={{ width: "150px" }} key={item.payroll.amount}>
-              <Input
-                name="amount"
+            <Grid.Col span={1}>
+              <Anchor
+                mb="sm"
                 size="xs"
-                radius="sm"
-                variant="unstyled"
-                icon={<IconCurrencyDollar size="1rem" />}
-                className="inputBold"
-                ref={(el) => (rows.current[`${item._id}_amount`] = el)}
-                defaultValue={item.payroll.amount}
-                disabled
-              />
-            </Input.Wrapper>
-            <Text mb="sm" size="xs" color="dimmed" mt="5px">
-              Gross Amount
-            </Text>
-          </Grid.Col>
-        </Grid>
-      </Card>
-    ));
+                color="blue.7"
+                mt="5px"
+                onClick={() => {
+                  setcurrentItem([item._id, index]);
+                  setExtraModal(true);
+                }}
+              >
+                Others +
+              </Anchor>
+            </Grid.Col>
+            <Grid.Col span={1}>
+              <Input.Wrapper
+                style={{ width: "100px" }}
+                key={item.payroll.amount}
+              >
+                <Input
+                  name="amount"
+                  size="xs"
+                  radius="sm"
+                  variant="unstyled"
+                  icon={<IconCurrencyDollar size="1rem" />}
+                  className="inputBold"
+                  ref={(el) => (rows.current[`${item._id}_amount`] = el)}
+                  defaultValue={item.payroll.amount}
+                  disabled
+                />
+              </Input.Wrapper>
+              <Text mb="sm" size="xs" color="dimmed" mt="5px">
+                Gross Amount
+              </Text>
+            </Grid.Col>
+          </Grid>
+        </Card>
+      ))
+    );
+  }, [data, error, rows]);
 
   return (
     <Container size={largeScreen ? "xl" : "md"} className="page-content">
-      <Modal
-        opened={payrollModal}
-        onClose={() => {
-          setPayrollModal(false);
-          setErrors([]);
-        }}
-        title="Review payroll summary"
-        size="80%"
-      >
-        {payrollRunData.users && payrollRunData.users.length != 0 && (
-          <>
-            <Grid mb="md">
-              <Grid.Col span={4}>
-                <Card shadow="sm" padding="lg" radius="md" withBorder>
-                  <Text weight="bold">Gross amount:</Text> $
-                  {payrollRunData.totalAmount}
-                </Card>
-              </Grid.Col>
-              <Grid.Col span={4}>
-                <Card shadow="sm" padding="lg" radius="md" withBorder>
-                  <Text weight="bold">Employees:</Text>
-                  {payrollRunData.users.length} Employees
-                </Card>
-              </Grid.Col>
-            </Grid>
-
-            <Table
-              mb="lg"
-              verticalSpacing="md"
-              striped
-              withBorder
-              withColumnBorders
-            >
-              <thead>
-                <tr>
-                  <th>Employee Name</th>
-                  <th>CPP</th>
-                  <th>EI</th>
-                  <th>Federal Tax</th>
-                  <th>Provincial Tax</th>
-                  <th>Income Tax</th>
-                  <th>Gross Amount</th>
-                  <th>Net Amount</th>
-                </tr>
-              </thead>
-              <tbody>
-                {payrollRunData.users.map((user) => {
-                  return (
-                    <tr>
-                      <td>{user.name}</td>
-
-                      <td>${user.CPP}</td>
-                      <td>${user.EI}</td>
-                      <td>${user.ITDfed}</td>
-                      <td>${user.ITDprov}</td>
-                      <td>${user.ITD}</td>
-                      <td>${user.grossAmount}</td>
-                      <td>${user.netAmount}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </Table>
-          </>
-        )}
-        {errors.length != 0 && (
-          <Table
-            mb="lg"
-            verticalSpacing="md"
-            striped
-            withBorder
-            withColumnBorders
-          >
-            <thead>
-              <tr>
-                <th>Email</th>
-                <th>Name</th>
-                <th>Security Question</th>
-                <th>Security Answer</th>
-                <th>Amount</th>
-                <th>Message</th>
-              </tr>
-            </thead>
-            <tbody>
-              {errors.map((error) => {
-                return (
-                  <tr>
-                    <td>{error.email}</td>
-                    <td>{`${error.firstName} ${error.lastName}`}</td>
-                    <td>{error.payroll.securityQuestion}</td>
-                    <td>{error.payroll.securityAnswer}</td>
-                    <td>${error.payroll.amount}</td>
-                    <td>
-                      <Text color="red">{error.message}</Text>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </Table>
-        )}
-        <Button
-          float="right"
-          onClick={() => {
-            dispatch(approvePayroll({ payroll: payrollRunData.payroll }));
-            navigate("/payrolls", { replace: true });
-          }}
-          loading={payrollLoading}
-          mr="sm"
-          disabled={errors.length != 0}
-        >
-          Approve
-        </Button>
-        <Button
-          float="right"
-          onClick={() => {
-            setPayrollModal(false);
-          }}
-          loading={payrollLoading}
-          variant="outline"
-        >
-          Cancel
-        </Button>
-      </Modal>
       <SendSmS opened={sendSmSOpened} setOpened={setSendSmS} />
-
       <Grid mb="10px" justify="space-between">
         <Grid.Col span={6}>
           <Title order={3}>Payroll</Title>
@@ -615,7 +494,6 @@ const RunPayroll = () => {
           </Grid>
         </Grid.Col>
       </Grid>
-
       <Grid mb="10px" justify="space-between">
         <Grid.Col span={6}>
           <Button variant="light" radius="xl" mr="10px" color="blue">
@@ -624,25 +502,10 @@ const RunPayroll = () => {
               size="xs"
               checked={selectAll}
               color="blue.9"
-              onClick={(event) => setSelectAll(event.currentTarget.checked)}
+              onChange={(event) => setSelectAll(event.currentTarget.checked)}
             />
           </Button>
-          {saveStatus ? (
-            <Group position="center" display="inline">
-              <IconCloudSnow
-                size="20"
-                style={{ top: "3px", position: "relative" }}
-              />
-              <Text display="inline" ml="5px">
-                Saved
-              </Text>
-            </Group>
-          ) : (
-            <Group display="inline">
-              <Loader size="20" style={{ top: "3px", position: "relative" }} />
-              <Text display="inline">Saving...</Text>
-            </Group>
-          )}
+          <SavingStatus status={saveStatus} />
         </Grid.Col>
         <Grid.Col span={3} offset={3} className={classes.actionButtons}>
           <Button
@@ -653,7 +516,8 @@ const RunPayroll = () => {
           </Button>
         </Grid.Col>
       </Grid>
-      {isError ? (
+
+      {isError && error == null ? (
         searchQuery.keyword != "" ? (
           <Title>No serach result found</Title>
         ) : (
@@ -669,7 +533,249 @@ const RunPayroll = () => {
         <>
           <ScrollArea>
             <>
-              <tbody>{sheet}</tbody>
+              {sheet}
+              {currentItem && Object.keys(rows.current).length != 0 && (
+                <Modal
+                  opened={extraModal}
+                  title={
+                    <Group>
+                      <Text weight={600} size="md">
+                        {data.contacts[currentItem[1]].firstName}'s Payroll
+                      </Text>
+                      <SavingStatus status={saveStatus} />
+                    </Group>
+                  }
+                  size="lg"
+                  onClose={() => {
+                    setExtraModal(false);
+                  }}
+                >
+                  <Grid justify="space-between">
+                    <Grid.Col span={6}>
+                      <Text size="sm" weight={600}>
+                        Work hour
+                      </Text>
+                      <Text color="dimmed" size="xs">
+                        Total user Hours
+                      </Text>
+                    </Grid.Col>
+                    <Grid.Col span={3}>
+                      {console.log(currentItem, rows.current)}
+                      <TextInput
+                        variant="filled"
+                        icon={<IconCurrencyDollar size="1rem" />}
+                        mt="5px"
+                        name="hours"
+                        defaultValue={
+                          rows.current[`${currentItem[0]}_hours`].value
+                        }
+                        onChange={(e) => onInputUpdate(e, currentItem[0], true)}
+                        error={
+                          error &&
+                          error["payroll.hours"] &&
+                          currentInput == `${currentItem[0]}_hours`
+                        }
+                        onBlur={(e) => {
+                          onInputChange(
+                            e,
+                            currentItem[0],
+                            rows.current[`${currentItem[0]}_amount`].value
+                          );
+                        }}
+                      />
+                    </Grid.Col>
+                  </Grid>
+
+                  <Grid justify="space-between" mt="10px">
+                    <Grid.Col span={6}>
+                      <Text size="sm" weight={600}>
+                        Wages
+                      </Text>
+                      <Text color="dimmed" size="xs">
+                        Hourly wage
+                      </Text>
+                    </Grid.Col>
+                    <Grid.Col span={3}>
+                      <TextInput
+                        variant="filled"
+                        icon={<IconCurrencyDollar size="1rem" />}
+                        mt="5px"
+                        name="wage"
+                        defaultValue={
+                          rows.current[`${currentItem[0]}_wage`].value
+                        }
+                        onChange={(e) => onInputUpdate(e, currentItem[0], true)}
+                        error={
+                          error &&
+                          error["payroll.hours"] &&
+                          currentInput == `${currentItem[0]}_wage`
+                        }
+                        onBlur={(e) => {
+                          onInputChange(
+                            e,
+                            currentItem[0],
+                            rows.current[`${currentItem[0]}_amount`].value
+                          );
+                        }}
+                      />
+                    </Grid.Col>
+                  </Grid>
+
+                  <Grid justify="space-between" mt="10px">
+                    <Grid.Col span={6}>
+                      <Text size="sm" weight={600}>
+                        Vacation Pay
+                      </Text>
+                      <Text color="dimmed" size="xs">
+                        Vacation pay of employee
+                      </Text>
+                    </Grid.Col>
+                    <Grid.Col span={3}>
+                      <TextInput
+                        variant="filled"
+                        icon={<IconCurrencyDollar size="1rem" />}
+                        mt="5px"
+                        name="extraPay"
+                        defaultValue={
+                          rows.current[`${currentItem[0]}_extraPay`].value
+                        }
+                        onChange={(e) => onInputUpdate(e, currentItem[0], true)}
+                        error={
+                          error &&
+                          error["payroll.hours"] &&
+                          currentInput == `${currentItem[0]}_extraPay`
+                        }
+                        onBlur={(e) => {
+                          onInputChange(
+                            e,
+                            currentItem[0],
+                            rows.current[`${currentItem[0]}_amount`].value
+                          );
+                        }}
+                      />
+                    </Grid.Col>
+                  </Grid>
+                </Modal>
+              )}
+              <Modal
+                opened={payrollModal}
+                onClose={() => {
+                  setPayrollModal(false);
+                  setErrors([]);
+                }}
+                title="Review payroll summary"
+                size="80%"
+              >
+                {payrollRunData.users && payrollRunData.users.length != 0 && (
+                  <>
+                    <Grid mb="md">
+                      <Grid.Col span={4}>
+                        <Card shadow="sm" padding="lg" radius="md">
+                          <Text weight="bold">Gross amount:</Text> $
+                          {payrollRunData.totalAmount}
+                        </Card>
+                      </Grid.Col>
+                      <Grid.Col span={4}>
+                        <Card shadow="sm" padding="lg" radius="md">
+                          <Text weight="bold">Employees:</Text>
+                          {payrollRunData.users.length} Employees
+                        </Card>
+                      </Grid.Col>
+                    </Grid>
+
+                    <Table
+                      mb="lg"
+                      verticalSpacing="md"
+                      striped
+                      withColumnBorders
+                    >
+                      <thead>
+                        <tr>
+                          <th>Employee Name</th>
+                          <th>CPP</th>
+                          <th>EI</th>
+                          <th>Federal Tax</th>
+                          <th>Provincial Tax</th>
+                          <th>Income Tax</th>
+                          <th>Gross Amount</th>
+                          <th>Net Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {payrollRunData.users.map((user) => {
+                          return (
+                            <tr>
+                              <td>{user.name}</td>
+
+                              <td>${user.CPP}</td>
+                              <td>${user.EI}</td>
+                              <td>${user.ITDfed}</td>
+                              <td>${user.ITDprov}</td>
+                              <td>${user.ITD}</td>
+                              <td>${user.grossAmount}</td>
+                              <td>${user.netAmount}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </Table>
+                  </>
+                )}
+                {errors.length != 0 && (
+                  <Table mb="lg" verticalSpacing="md" striped withColumnBorders>
+                    <thead>
+                      <tr>
+                        <th>Email</th>
+                        <th>Name</th>
+                        <th>Security Question</th>
+                        <th>Security Answer</th>
+                        <th>Amount</th>
+                        <th>Message</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {errors.map((error) => {
+                        return (
+                          <tr>
+                            <td>{error.email}</td>
+                            <td>{`${error.firstName} ${error.lastName}`}</td>
+                            <td>{error.payroll.securityQuestion}</td>
+                            <td>{error.payroll.securityAnswer}</td>
+                            <td>${error.payroll.amount}</td>
+                            <td>
+                              <Text color="red">{error.message}</Text>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </Table>
+                )}
+                <Button
+                  float="right"
+                  onClick={() => {
+                    dispatch(
+                      approvePayroll({ payroll: payrollRunData.payroll })
+                    );
+                    navigate("/payrolls", { replace: true });
+                  }}
+                  loading={payrollLoading}
+                  mr="sm"
+                  disabled={errors.length != 0}
+                >
+                  Approve
+                </Button>
+                <Button
+                  float="right"
+                  onClick={() => {
+                    setPayrollModal(false);
+                  }}
+                  loading={payrollLoading}
+                  variant="outline"
+                >
+                  Cancel
+                </Button>
+              </Modal>
             </>
           </ScrollArea>
           <Pagination
